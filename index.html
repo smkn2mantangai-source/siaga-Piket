@@ -94,9 +94,8 @@
         </div>
     </div>
 
-    <!-- Login Page (Halaman Depan 100% Clean) -->
+    <!-- Login Page -->
     <div id="pageLogin" class="fixed inset-0 bg-slate-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-        <!-- Abstract Background Shapes -->
         <div class="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
             <div class="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-indigo-200/40 blur-[120px]"></div>
             <div class="absolute top-[60%] -right-[10%] w-[40%] h-[40%] rounded-full bg-purple-200/40 blur-[120px]"></div>
@@ -143,7 +142,6 @@
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2">Pilih Kelas</label>
                     <select id="publicKelas" onchange="loadPublicStudents()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 text-slate-800 appearance-none cursor-pointer" required>
-                        <!-- Diisi otomatis via JS saat init -->
                     </select>
                 </div>
                 <div>
@@ -160,7 +158,7 @@
         </div>
     </div>
 
-    <!-- App Wrapper (Menyembunyikan total dashboard & menu sebelum login) -->
+    <!-- App Wrapper -->
     <div id="appWrapper" class="hidden h-full w-full flex overflow-hidden">
 
     <!-- Mobile Sidebar Backdrop -->
@@ -175,22 +173,17 @@
                 </div>
                 <span class="font-extrabold text-xl tracking-tight text-slate-800 logo-text">SIAGA</span>
             </div>
-            <!-- Toggle Button (Desktop Only) -->
             <button onclick="toggleSidebarDesktop()" class="hidden md:block text-slate-400 hover:text-indigo-600 p-2 rounded-lg hover:bg-indigo-50 transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
-            <!-- Close Button (Mobile Only) -->
             <button onclick="toggleSidebar()" class="md:hidden text-slate-400 hover:text-slate-600 p-2">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
         
-        <!-- Menu Container -->
         <div class="flex-1 overflow-y-auto py-4 overflow-x-hidden" id="navMenuContainer">
-            <!-- Menus injected via JS -->
         </div>
         
-        <!-- User Profile Area -->
         <div class="p-4 border-t border-slate-100 flex-shrink-0 bg-slate-50/50">
             <div class="flex items-center w-full mb-4">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-100 to-purple-100 flex items-center justify-center text-indigo-700 font-bold text-lg flex-shrink-0 shadow-sm border border-white" id="userInitial">U</div>
@@ -208,7 +201,6 @@
     </aside>
 
     <main id="mainContent" class="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 relative">
-        <!-- Mobile Header -->
         <header id="mobileHeader" class="md:hidden h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 sticky top-0 z-30 shadow-sm">
             <div class="flex items-center">
                 <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center mr-2">
@@ -221,25 +213,21 @@
             </button>
         </header>
 
-        <!-- View Container (Scrollable) -->
         <div class="flex-1 overflow-y-auto p-4 md:p-8 w-full relative scroll-smooth" id="viewContainer">
-            <!-- All views will be defined below via JS injection -->
         </div>
     </main>
-    </div> <!-- End of App Wrapper -->
+    </div>
 
     <script>
         // ==========================================
         // KONFIGURASI API (GOOGLE APPS SCRIPT)
         // ==========================================
-        // GANTI URL DI BAWAH INI DENGAN URL WEB APP MILIK ANDA
         const API_URL = 'https://script.google.com/macros/s/AKfycbykcSEri3deYFk55atYMcUS46Ay1YUyNgcSCi_uQc38rzJLNlyOv6BZHmiNKEwCij8N/exec'; 
 
         let currentUser = null;
         let globalData = { kehadiran: [], kejadian: [] };
         let isDataFetched = false;
         
-        // --- DATABASE KELAS & GURU LOKAL (SUPER CEPAT) ---
         const FIXED_CLASSES = ['XA', 'XB', 'XI ATPH', 'XI ATP', 'XII ATPH', 'XII ATP'];
         
         const DATA_GURU = {
@@ -265,30 +253,35 @@
         let currentMonthsInfo = [];
         let siswaChartInstance = null;
 
-        // --- Core API Caller ---
-        async function apiCall(action, data = null) {
-            // Mode Simulasi (Mock): Mencegah error jika URL API belum diganti dan memungkinkan fitur Preview bekerja
+        // --- Core API Caller (Selalu Menggunakan POST) ---
+        async function apiCall(action, data = {}) {
             if (API_URL === 'PASTE_LINK_API_ANDA_DISINI_NANTI' || API_URL === '') {
-                console.warn("MODE PRATINJAU: URL API belum diatur. Menggunakan data simulasi (Mock Data).");
+                console.warn("MODE PRATINJAU: URL API belum diatur. Menggunakan data simulasi.");
                 return new Promise(resolve => setTimeout(() => resolve(getMockData(action, data)), 600));
             }
             
             try {
                 let url = API_URL + '?action=' + action;
-                let options = { method: 'GET' };
-                if (data) options = { method: 'POST', body: JSON.stringify(data), headers: { 'Content-Type': 'text/plain;charset=utf-8' } };
+                let payloadData = data || {};
+                payloadData.action = action; // sertakan action di payload
+                
+                let options = { 
+                    method: 'POST', 
+                    body: JSON.stringify(payloadData), 
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' } 
+                };
+                
                 const response = await fetch(url, options);
                 return await response.json();
             } catch (error) { 
                 hideLoading();
-                Swal.fire('Koneksi Gagal', 'Tidak dapat terhubung ke server. Pastikan internet aktif dan URL API_URL sudah benar.', 'error');
-                // Mengembalikan object aman alih-alih melempar error agar tidak memicu Unhandled Rejection di console
+                Swal.fire('Koneksi Gagal', 'Tidak dapat terhubung ke server. Pastikan internet aktif dan URL API sudah benar.', 'error');
                 if (action === 'getStudentsByClass') return [];
                 return { success: false, message: "Koneksi ke server gagal." }; 
             }
         }
 
-        // --- Mock Data Generator (Khusus Preview di Browser tanpa API) ---
+        // --- Mock Data Generator ---
         function getMockData(action, data) {
             const today = new Date().toISOString().split('T')[0];
             switch(action) {
@@ -369,7 +362,9 @@
             sel.innerHTML = '<option value="">Sedang mencari nama...</option>';
             apiCall('getStudentsByClass', {kelas: k}).then(s => { 
                 sel.innerHTML = '<option value="">-- Pilih Nama Anda --</option>'; 
-                s.forEach(x => sel.add(new Option(x.nama, x.nama))); 
+                if(Array.isArray(s)) {
+                    s.forEach(x => sel.add(new Option(x.nama, x.nama))); 
+                }
             });
         }
 
@@ -379,8 +374,8 @@
             apiCall('processLogin', {username: document.getElementById('username').value, password: document.getElementById('password').value})
                 .then(res => { 
                     hideLoading(); 
-                    if(res.success) { currentUser = res.user; initApp(); } 
-                    else Swal.fire({title: 'Gagal', text: res.message, icon: 'error', confirmButtonColor: '#4f46e5'}); 
+                    if(res && res.success) { currentUser = res.user; initApp(); } 
+                    else Swal.fire({title: 'Gagal', text: res ? res.message : 'Login gagal', icon: 'error', confirmButtonColor: '#4f46e5'}); 
                 });
         }
 
@@ -430,7 +425,6 @@
             if(viewId === 'dashboard') loadDashboardPiket();
             if(viewId === 'logbook') fetchLogbook();
             
-            // Render Super Data
             if(['rekapHadir', 'trenSemester', 'rekapLanggar', 'dashboardSiswa'].includes(viewId)) {
                 if(!isDataFetched) {
                     fetchSuperData(viewId);
@@ -511,7 +505,6 @@
         }
 
         function populateFormDropdowns() {
-            // Hardcode pengisian kelas agar instan
             const classDropdowns = ['publicKelas', 'inputHadirKelas', 'pantauKelas', 'kejadianKelas', 'filterHadirKelas', 'filterLanggarKelas', 'filterTrenKelas'];
             classDropdowns.forEach(id => {
                 const el = document.getElementById(id);
@@ -525,15 +518,14 @@
 
         function fetchSuperData(targetViewId) {
             showLoading("Menarik data rekapitulasi dari server...");
-            apiCall('getSuperData').then(res => {
+            apiCall('getSuperData', {}).then(res => {
                 hideLoading();
-                if(res && res.success) {
+                if(res && res.success && res.data) {
                     globalData = res.data;
                     isDataFetched = true;
-                    console.log("Data berhasil ditarik: ", globalData);
                     triggerViewRender(targetViewId);
                 } else {
-                    Swal.fire('Error', res.message, 'error');
+                    Swal.fire('Gagal Mengambil Data', res ? res.message : 'Server tidak merespon dengan benar', 'error');
                 }
             }).catch(err => {
                 hideLoading();
@@ -547,7 +539,7 @@
             document.getElementById('dashDateDisplay').innerText = new Date(tgl).toLocaleDateString('id-ID', opts);
             
             apiCall('getDashboardData', {tanggal: tgl}).then(res => {
-                if(res.success) {
+                if(res && res.success) {
                     const s = res.stats;
                     document.getElementById('kpi-hadir').innerText = s.totalSiswa > 0 ? (((s.hadir + s.telat) / s.totalSiswa) * 100).toFixed(1) + '%' : '0%';
                     document.getElementById('kpi-total-siswa').innerText = s.totalSiswa;
@@ -566,6 +558,8 @@
             if(!k) { document.getElementById('attendanceListContainer').classList.add('hidden'); return; }
             showLoading("Memuat daftar siswa...");
             apiCall('getStudentsByClass', {kelas: k}).then(s => {
+                hideLoading();
+                if(!Array.isArray(s)) return;
                 tbody.innerHTML = s.map((st, i) => `
                     <tr class="hover:bg-slate-50 border-b border-slate-100 transition-colors" data-nama="${st.nama}" data-kelas="${st.kelas}">
                         <td class="p-3 text-center sticky-col font-medium text-slate-400">${i+1}</td>
@@ -578,7 +572,7 @@
                         <td class="p-2"><input type="text" class="ket-input input-modern w-full px-3 py-2 rounded-lg text-xs bg-white placeholder-slate-300" placeholder="Opsional"></td>
                     </tr>
                 `).join('');
-                document.getElementById('attendanceListContainer').classList.remove('hidden'); hideLoading();
+                document.getElementById('attendanceListContainer').classList.remove('hidden');
             });
         }
 
@@ -595,11 +589,11 @@
             showLoading("Menyimpan data...");
             apiCall('saveAttendanceBatch', {dataBatch, tanggal: tgl, penginput: currentUser.nama}).then(res => {
                 hideLoading(); 
-                if(res.success){ 
+                if(res && res.success){ 
                     showToast('success','Tersimpan!'); 
                     document.getElementById('inputHadirKelas').value=''; 
                     document.getElementById('attendanceListContainer').classList.add('hidden'); 
-                    isDataFetched = false; // Minta sistem update data grafik karena ada absen baru
+                    isDataFetched = false;
                 } 
             });
         }
@@ -679,7 +673,7 @@
                 penginput: currentUser.nama
             }).then(r => { 
                 hideLoading(); 
-                if(r.success) { 
+                if(r && r.success) { 
                     showToast('success','Tersimpan'); 
                     document.getElementById('formPemantauan').reset(); 
                     updateHariPantau(); 
@@ -719,7 +713,9 @@
             sel.innerHTML = '<option value="">Sedang mencari nama...</option>';
             apiCall('getStudentsByClass', {kelas: k}).then(s => { 
                 sel.innerHTML = '<option value="">-- Pilih Nama Siswa --</option>'; 
-                s.forEach(x => sel.add(new Option(x.nama, x.nama))); 
+                if(Array.isArray(s)) {
+                    s.forEach(x => sel.add(new Option(x.nama, x.nama))); 
+                }
             });
         }
 
@@ -728,7 +724,6 @@
             const kategoriPilihan = document.getElementById('kejadianKategori').value;
             let deskripsiFinal = document.getElementById('kejadianDeskripsi').value;
 
-            // Jika Kategori Siswa, gabungkan informasi nama dan kelas ke deskripsi
             if (kategoriPilihan === 'Siswa') {
                 const k = document.getElementById('kejadianKelas').value;
                 const n = document.getElementById('kejadianNama').value;
@@ -773,13 +768,13 @@
         function sendKejadianApi(payload) {
             apiCall('saveKejadian', payload).then(r => { 
                 hideLoading(); 
-                if(r.success) { 
+                if(r && r.success) { 
                     showToast('success','Laporan Terkirim'); 
                     document.getElementById('formKejadian').reset(); 
                     document.getElementById('kejadianSiswaContainer').classList.add('hidden');
-                    isDataFetched = false; // Reset rekap
+                    isDataFetched = false;
                 } else {
-                    Swal.fire('Error', r.message, 'error');
+                    Swal.fire('Error', r ? r.message : 'Gagal menyimpan', 'error');
                 }
             });
         }
@@ -789,7 +784,7 @@
             const content = document.getElementById('logbookContent');
             content.innerHTML = '<div class="text-center py-12 text-slate-400 font-medium">Sedang menyusun logbook...</div>';
             apiCall('getLogbook', {tanggal: tgl}).then(r => {
-                if(r.success) {
+                if(r && r.success) {
                     const p = r.data.pemantauan, k = r.data.kejadian;
                     const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
                     content.innerHTML = `
@@ -813,7 +808,7 @@
         }
 
         function applyHadirFilters() {
-            if(!globalData.kehadiran) return;
+            if(!globalData || !globalData.kehadiran) return;
             const fKelas = document.getElementById('filterHadirKelas').value;
             const fBulan = document.getElementById('filterHadirBulan').value;
             const fMulai = document.getElementById('filterHadirMulai').value;
@@ -828,7 +823,7 @@
             const pivot = {};
             tempData.forEach(row => {
                 if (!pivot[row.nama]) pivot[row.nama] = { nama: row.nama, kelas: row.kelas, H:0, S:0, I:0, A:0, T:0, total:0 };
-                const stat = row.status.toUpperCase();
+                const stat = row.status ? row.status.toUpperCase() : '';
                 if (['H', 'S', 'I', 'A', 'T'].includes(stat)) { pivot[row.nama][stat]++; pivot[row.nama].total++; }
             });
 
@@ -865,16 +860,16 @@
         }
 
         function applyLanggarFilters() {
-            if(!globalData.kejadian) return;
+            if(!globalData || !globalData.kejadian) return;
             const fKelas = document.getElementById('filterLanggarKelas') ? document.getElementById('filterLanggarKelas').value : null;
             const fKategori = document.getElementById('filterLanggarKategori').value;
             const fBulan = document.getElementById('filterLanggarBulan').value;
 
             langgarFilteredData = globalData.kejadian;
             if (currentUser.role === 'SISWA') {
-                langgarFilteredData = langgarFilteredData.filter(d => d.deskripsi.includes(currentUser.nama));
+                langgarFilteredData = langgarFilteredData.filter(d => d.deskripsi && d.deskripsi.includes(currentUser.nama));
             } else {
-                if (fKelas) langgarFilteredData = langgarFilteredData.filter(d => d.deskripsi.includes(fKelas)); 
+                if (fKelas) langgarFilteredData = langgarFilteredData.filter(d => d.deskripsi && d.deskripsi.includes(fKelas)); 
             }
             if (fKategori) langgarFilteredData = langgarFilteredData.filter(d => d.kategori === fKategori);
             if (fBulan) langgarFilteredData = langgarFilteredData.filter(d => d.tanggal && d.tanggal.split('-')[1] === fBulan);
@@ -905,7 +900,7 @@
         }
 
         function renderTrenSemester() {
-            if(!document.getElementById('view-trenSemester') || !globalData.kehadiran) return;
+            if(!document.getElementById('view-trenSemester') || !globalData || !globalData.kehadiran) return;
             const semester = document.getElementById('filterTrenSemester').value; 
             const fKelas = document.getElementById('filterTrenKelas').value;
             
@@ -925,7 +920,7 @@
                     pivot[row.nama] = { nama: row.nama, kelas: row.kelas, months: {} };
                     currentMonthsInfo.forEach(mo => pivot[row.nama].months[mo.m] = { H:0, total:0 });
                 }
-                const stat = row.status.toUpperCase();
+                const stat = row.status ? row.status.toUpperCase() : '';
                 if (['H', 'S', 'I', 'A', 'T'].includes(stat)) {
                     pivot[row.nama].months[month].total++;
                     if(['H', 'T'].includes(stat)) pivot[row.nama].months[month].H++; 
@@ -981,14 +976,14 @@
         }
 
         function renderStudentDashboard() {
-            if(!globalData.kehadiran) return;
+            if(!globalData || !globalData.kehadiran) return;
             const today = new Date(), currentMonth = String(today.getMonth() + 1).padStart(2, '0');
             let H_bulan = 0, total_bulan = 0;
             const myData = globalData.kehadiran.filter(d => d.nama === currentUser.nama && d.kelas === currentUser.kelas);
             
             myData.forEach(row => {
                 if(row.tanggal && row.tanggal.split('-')[1] === currentMonth) {
-                    const stat = row.status.toUpperCase();
+                    const stat = row.status ? row.status.toUpperCase() : '';
                     if(['H', 'S', 'I', 'A', 'T'].includes(stat)) { total_bulan++; if(['H', 'T'].includes(stat)) H_bulan++; }
                 }
             });
@@ -1002,7 +997,7 @@
                 if(!row.tanggal) return;
                 const month = row.tanggal.split('-')[1];
                 if(monthsData[month]) {
-                    const stat = row.status.toUpperCase();
+                    const stat = row.status ? row.status.toUpperCase() : '';
                     if(['H', 'S', 'I', 'A', 'T'].includes(stat)) { monthsData[month].total++; if(['H', 'T'].includes(stat)) monthsData[month].H++; }
                 }
             });
@@ -1049,14 +1044,14 @@
         }
 
         function renderStudentDetailTable(myData = null) {
-            if(!globalData.kehadiran) return;
+            if(!globalData || !globalData.kehadiran) return;
             if(!myData) myData = globalData.kehadiran.filter(d => d.nama === currentUser.nama && d.kelas === currentUser.kelas);
             const fBulan = document.getElementById('siswaFilterBulan').value;
             if (fBulan) myData = myData.filter(d => d.tanggal && d.tanggal.split('-')[1] === fBulan);
 
             let counts = { H:0, S:0, I:0, A:0, T:0, total:0 };
             myData.forEach(row => {
-                const stat = row.status.toUpperCase();
+                const stat = row.status ? row.status.toUpperCase() : '';
                 if(['H', 'S', 'I', 'A', 'T'].includes(stat)) { counts[stat]++; counts.total++; }
             });
 
@@ -1098,7 +1093,6 @@
                 </div>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
-                    <!-- KPI Cards -->
                     <div class="bg-gradient-to-br from-indigo-500 to-indigo-600 p-6 rounded-3xl shadow-lg shadow-indigo-200 text-white relative overflow-hidden group">
                         <div class="absolute -right-4 -top-4 w-24 h-24 bg-white opacity-10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
                         <div class="flex items-center space-x-3 mb-4">
@@ -1316,7 +1310,6 @@
                             </div>
                         </div>
 
-                        <!-- Form Khusus Kategori Siswa -->
                         <div id="kejadianSiswaContainer" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-5 bg-rose-50 p-5 rounded-2xl border border-rose-100">
                             <div class="col-span-full mb-1"><p class="text-sm font-bold text-rose-800">Identitas Siswa Terkait:</p></div>
                             <div>
@@ -1360,7 +1353,6 @@
                     </div>
                 </div>
                 <div class="bg-white p-6 md:p-10 rounded-3xl shadow-sm border border-slate-200 print:shadow-none print:border-none print:p-0" id="logbookContent">
-                    <!-- Injected via JS -->
                 </div>
             </div>`;
         }
