@@ -233,7 +233,7 @@
         // KONFIGURASI API (GOOGLE APPS SCRIPT)
         // ==========================================
         // GANTI URL DI BAWAH INI DENGAN URL WEB APP MILIK ANDA
-        const API_URL = 'PASTE_LINK_API_ANDA_DISINI_NANTI'; 
+        const API_URL = 'https://script.google.com/macros/s/AKfycbykcSEri3deYFk55atYMcUS46Ay1YUyNgcSCi_uQc38rzJLNlyOv6BZHmiNKEwCij8N/exec'; 
 
         let currentUser = null;
         let globalData = { kehadiran: [], kejadian: [] };
@@ -267,20 +267,71 @@
 
         // --- Core API Caller ---
         async function apiCall(action, data = null) {
+            // Mode Simulasi (Mock): Mencegah error jika URL API belum diganti dan memungkinkan fitur Preview bekerja
+            if (API_URL === 'PASTE_LINK_API_ANDA_DISINI_NANTI' || API_URL === '') {
+                console.warn("MODE PRATINJAU: URL API belum diatur. Menggunakan data simulasi (Mock Data).");
+                return new Promise(resolve => setTimeout(() => resolve(getMockData(action, data)), 600));
+            }
+            
             try {
-                if (API_URL === 'PASTE_LINK_API_ANDA_DISINI_NANTI') {
-                    throw new Error("URL API belum diganti. Silakan periksa file Index.html");
-                }
                 let url = API_URL + '?action=' + action;
                 let options = { method: 'GET' };
                 if (data) options = { method: 'POST', body: JSON.stringify(data), headers: { 'Content-Type': 'text/plain;charset=utf-8' } };
                 const response = await fetch(url, options);
-                const result = await response.json();
-                return result;
+                return await response.json();
             } catch (error) { 
                 hideLoading();
-                Swal.fire('Koneksi Gagal', 'Tidak dapat terhubung ke server. Pastikan internet aktif dan URL API_URL di kode Anda sudah benar.<br><br>Detail: ' + error.message, 'error');
-                throw new Error("Koneksi ke server gagal."); 
+                Swal.fire('Koneksi Gagal', 'Tidak dapat terhubung ke server. Pastikan internet aktif dan URL API_URL sudah benar.', 'error');
+                // Mengembalikan object aman alih-alih melempar error agar tidak memicu Unhandled Rejection di console
+                if (action === 'getStudentsByClass') return [];
+                return { success: false, message: "Koneksi ke server gagal." }; 
+            }
+        }
+
+        // --- Mock Data Generator (Khusus Preview di Browser tanpa API) ---
+        function getMockData(action, data) {
+            const today = new Date().toISOString().split('T')[0];
+            switch(action) {
+                case 'processLogin':
+                    return { success: true, user: { username: data.username, role: 'GURU_PIKET', nama: 'Guru Piket (Demo)', kelas: '' } };
+                case 'getStudentsByClass':
+                    return [
+                        {nama: 'Ahmad Jailani', kelas: data.kelas}, {nama: 'Budi Santoso', kelas: data.kelas},
+                        {nama: 'Citra Kirana', kelas: data.kelas}, {nama: 'Dewi Lestari', kelas: data.kelas},
+                        {nama: 'Eko Prasetyo', kelas: data.kelas}
+                    ];
+                case 'getDashboardData':
+                    return { success: true, stats: { hadir: 32, sakit: 2, izin: 1, alpa: 0, telat: 1, totalSiswa: 36, kelasDipantau: 5, kBerjalan: 4, kGuruKosong: 1, kTanpaTugas: 0, totalKejadian: 2 } };
+                case 'saveAttendanceBatch':
+                case 'savePemantauan':
+                case 'saveKejadian':
+                    return { success: true, message: 'Berhasil disimpan (Mode Demo)' };
+                case 'getLogbook':
+                    return { 
+                        success: true, 
+                        data: { 
+                            pemantauan: [{kelas: 'XA', jam: '1, 2', mapel: 'Informatika', guru: 'GUFRON FIRMANSYAH, S.Pd', status: 'Pembelajaran berlangsung dengan guru', tugas: '-', piket: 'Guru Piket (Demo)'}], 
+                            kejadian: [{kategori: 'Siswa', sub: 'Terlambat', deskripsi: 'Siswa: Ahmad Jailani (XA) - Datang telat 15 menit', tindakLanjut: 'Teguran lisan', piket: 'Guru Piket (Demo)', dokumentasi: ''}]
+                        } 
+                    };
+                case 'getSuperData':
+                    return {
+                        success: true,
+                        data: {
+                            kehadiran: [
+                                {tanggal: today, nama: 'Ahmad Jailani', kelas: 'XA', status: 'H', keterangan: ''},
+                                {tanggal: today, nama: 'Budi Santoso', kelas: 'XA', status: 'S', keterangan: 'Sakit'},
+                                {tanggal: '2026-07-15', nama: 'Ahmad Jailani', kelas: 'XA', status: 'H', keterangan: ''},
+                                {tanggal: '2026-08-10', nama: 'Ahmad Jailani', kelas: 'XA', status: 'H', keterangan: ''},
+                                {tanggal: '2026-10-05', nama: 'Ahmad Jailani', kelas: 'XA', status: 'A', keterangan: ''},
+                            ],
+                            kejadian: [
+                                {tanggal: today, kategori: 'Siswa', sub: 'Terlambat', deskripsi: 'Siswa: Budi Santoso (XA) - Datang telat 15 menit', tindakLanjut: 'Teguran lisan', piket: 'Guru Piket (Demo)', dokumentasi: ''}
+                            ]
+                        }
+                    };
+                default:
+                    return { success: false, message: 'Aksi tidak dikenali di Mode Demo' };
             }
         }
 
