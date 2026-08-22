@@ -207,7 +207,7 @@
         </div>
     </aside>
 
-    <main id="mainContent" class="flex-1 flex flex-col h-full overflow-hidden hidden bg-slate-50 relative">
+    <main id="mainContent" class="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 relative">
         <!-- Mobile Header -->
         <header id="mobileHeader" class="md:hidden h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 sticky top-0 z-30 shadow-sm">
             <div class="flex items-center">
@@ -232,8 +232,8 @@
         // ==========================================
         // KONFIGURASI API (GOOGLE APPS SCRIPT)
         // ==========================================
-        // GANTI URL INI DENGAN URL WEB APP ANDA YANG BARU
-        const API_URL = 'https://script.google.com/macros/s/AKfycbykcSEri3deYFk55atYMcUS46Ay1YUyNgcSCi_uQc38rzJLNlyOv6BZHmiNKEwCij8N/exec'; 
+        // GANTI URL DI BAWAH INI DENGAN URL WEB APP MILIK ANDA
+        const API_URL = 'PASTE_LINK_API_ANDA_DISINI_NANTI'; 
 
         let currentUser = null;
         let globalData = { kehadiran: [], kejadian: [] };
@@ -268,6 +268,9 @@
         // --- Core API Caller ---
         async function apiCall(action, data = null) {
             try {
+                if (API_URL === 'PASTE_LINK_API_ANDA_DISINI_NANTI') {
+                    throw new Error("URL API belum diganti. Silakan periksa file Index.html");
+                }
                 let url = API_URL + '?action=' + action;
                 let options = { method: 'GET' };
                 if (data) options = { method: 'POST', body: JSON.stringify(data), headers: { 'Content-Type': 'text/plain;charset=utf-8' } };
@@ -275,7 +278,8 @@
                 const result = await response.json();
                 return result;
             } catch (error) { 
-                Swal.fire('Koneksi Gagal', 'Tidak dapat terhubung ke server Google. Pastikan URL API sudah benar dan internet Anda aktif.', 'error');
+                hideLoading();
+                Swal.fire('Koneksi Gagal', 'Tidak dapat terhubung ke server. Pastikan internet aktif dan URL API_URL di kode Anda sudah benar.<br><br>Detail: ' + error.message, 'error');
                 throw new Error("Koneksi ke server gagal."); 
             }
         }
@@ -297,16 +301,14 @@
             document.getElementById('studentPortalForm').classList.add('hidden'); 
             document.getElementById('authSelection').classList.remove('hidden'); 
         }
-        
         function showAdminLogin() { 
             document.getElementById('authSelection').classList.add('hidden'); 
             document.getElementById('loginForm').classList.remove('hidden'); 
         }
-        
         function showStudentPortal() {
             document.getElementById('authSelection').classList.add('hidden'); 
             document.getElementById('studentPortalForm').classList.remove('hidden');
-            populateFormDropdowns(); // Mengisi list kelas seketika
+            populateFormDropdowns();
         }
 
         function loadPublicStudents() {
@@ -339,16 +341,9 @@
 
         function handleLogout() { 
             Swal.fire({
-                title: 'Keluar Sistem?',
-                text: "Anda harus login kembali untuk mengakses data.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#4f46e5',
-                cancelButtonColor: '#ef4444',
-                confirmButtonText: 'Ya, Keluar'
-            }).then((result) => {
-                if (result.isConfirmed) location.reload();
-            });
+                title: 'Keluar Sistem?', text: "Anda harus login kembali untuk mengakses data.", icon: 'warning',
+                showCancelButton: true, confirmButtonColor: '#4f46e5', cancelButtonColor: '#ef4444', confirmButtonText: 'Ya, Keluar'
+            }).then((result) => { if (result.isConfirmed) location.reload(); });
         }
 
         // --- Sidebar Logic ---
@@ -358,7 +353,6 @@
             sidebar.classList.toggle('-translate-x-full');
             overlay.classList.toggle('hidden');
         }
-
         function toggleSidebarDesktop() {
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('sidebar-minimized');
@@ -368,14 +362,11 @@
 
         function navigate(viewId) {
             document.querySelectorAll('.app-view').forEach(el => {
-                el.classList.add('hidden');
-                el.classList.remove('print-active');
+                el.classList.add('hidden'); el.classList.remove('print-active');
             });
             const targetView = document.getElementById('view-' + viewId);
             if(targetView) {
-                targetView.classList.remove('hidden');
-                targetView.classList.add('print-active');
-                targetView.classList.add('fade-in-up'); 
+                targetView.classList.remove('hidden'); targetView.classList.add('print-active'); targetView.classList.add('fade-in-up'); 
             }
             
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -388,6 +379,7 @@
             if(viewId === 'dashboard') loadDashboardPiket();
             if(viewId === 'logbook') fetchLogbook();
             
+            // Render Super Data
             if(['rekapHadir', 'trenSemester', 'rekapLanggar', 'dashboardSiswa'].includes(viewId)) {
                 if(!isDataFetched) {
                     fetchSuperData(viewId);
@@ -414,7 +406,7 @@
             document.getElementById('userInitial').innerText = currentUser.nama.charAt(0).toUpperCase();
 
             buildMenusAndViews();
-            populateFormDropdowns(); // Mengisi semua dropdown kelas secara massal & instan
+            populateFormDropdowns();
             
             const today = new Date().toISOString().split('T')[0];
             ['dashDate', 'inputHadirTanggal', 'pantauTanggal', 'kejadianTanggal', 'logbookDate'].forEach(id => {
@@ -422,18 +414,13 @@
                 if(el) el.value = today;
             });
             
-            if (currentUser.role === 'SISWA') {
-                navigate('dashboardSiswa');
-            } else {
-                navigate('dashboard');
-                updateHariPantau();
-            }
+            if (currentUser.role === 'SISWA') { navigate('dashboardSiswa'); } 
+            else { navigate('dashboard'); updateHariPantau(); }
         }
 
         function buildMenusAndViews() {
             const navContainer = document.getElementById('navMenuContainer');
             const viewContainer = document.getElementById('viewContainer');
-            
             navContainer.innerHTML = ''; viewContainer.innerHTML = '';
 
             let menus = [];
@@ -465,8 +452,7 @@
                     navContainer.insertAdjacentHTML('beforeend', `<p class="px-6 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mt-6 mb-2 menu-header">${m.label}</p>`);
                 } else {
                     const navHTML = `<button onclick="navigate('${m.id}')" class="nav-item nav-${m.id} w-full flex items-center px-6 py-3.5 text-slate-600 hover:text-indigo-600 focus:outline-none">
-                                        <span class="mr-4 text-xl">${m.icon}</span> 
-                                        <span class="menu-text font-semibold text-sm">${m.label}</span>
+                                        <span class="mr-4 text-xl">${m.icon}</span> <span class="menu-text font-semibold text-sm">${m.label}</span>
                                      </button>`;
                     navContainer.insertAdjacentHTML('beforeend', navHTML);
                 }
@@ -474,7 +460,7 @@
         }
 
         function populateFormDropdowns() {
-            // Hardcode 100% cepat tanpa perlu tunggu API untuk Kelas
+            // Hardcode pengisian kelas agar instan
             const classDropdowns = ['publicKelas', 'inputHadirKelas', 'pantauKelas', 'kejadianKelas', 'filterHadirKelas', 'filterLanggarKelas', 'filterTrenKelas'];
             classDropdowns.forEach(id => {
                 const el = document.getElementById(id);
@@ -487,14 +473,20 @@
         }
 
         function fetchSuperData(targetViewId) {
-            showLoading("Menarik data historis dari server...");
+            showLoading("Menarik data rekapitulasi dari server...");
             apiCall('getSuperData').then(res => {
                 hideLoading();
                 if(res && res.success) {
                     globalData = res.data;
                     isDataFetched = true;
-                    triggerViewRender(targetViewId); // Trigger render pada halaman yang sedang dibuka
+                    console.log("Data berhasil ditarik: ", globalData);
+                    triggerViewRender(targetViewId);
+                } else {
+                    Swal.fire('Error', res.message, 'error');
                 }
+            }).catch(err => {
+                hideLoading();
+                console.error("Gagal getSuperData", err);
             });
         }
 
@@ -556,7 +548,7 @@
                     showToast('success','Tersimpan!'); 
                     document.getElementById('inputHadirKelas').value=''; 
                     document.getElementById('attendanceListContainer').classList.add('hidden'); 
-                    isDataFetched = false; // Minta sistem update data grafik
+                    isDataFetched = false; // Minta sistem update data grafik karena ada absen baru
                 } 
             });
         }
@@ -657,17 +649,15 @@
             };
             if(subs[k]) subs[k].forEach(x => sel.add(new Option(x,x)));
 
-            // Menampilkan atau Menyembunyikan Blok Identitas Siswa
             const siswaContainer = document.getElementById('kejadianSiswaContainer');
             const labelDeskripsi = document.getElementById('labelDeskripsiKejadian');
-            if (siswaContainer) {
-                if (k === 'Siswa') {
-                    siswaContainer.classList.remove('hidden');
-                    labelDeskripsi.innerText = "Kronologi / Deskripsi Singkat";
-                } else {
-                    siswaContainer.classList.add('hidden');
-                    labelDeskripsi.innerText = "Deskripsi Detail Kejadian";
-                }
+            
+            if (k === 'Siswa') {
+                siswaContainer.classList.remove('hidden');
+                labelDeskripsi.innerText = "Kronologi / Deskripsi Singkat";
+            } else {
+                siswaContainer.classList.add('hidden');
+                labelDeskripsi.innerText = "Deskripsi Detail Kejadian";
             }
         }
 
@@ -687,13 +677,12 @@
             const kategoriPilihan = document.getElementById('kejadianKategori').value;
             let deskripsiFinal = document.getElementById('kejadianDeskripsi').value;
 
-            // Jika Kategori Siswa, Wajib Isi Kelas dan Nama, lalu gabungkan ke Deskripsi
+            // Jika Kategori Siswa, gabungkan informasi nama dan kelas ke deskripsi
             if (kategoriPilihan === 'Siswa') {
                 const k = document.getElementById('kejadianKelas').value;
                 const n = document.getElementById('kejadianNama').value;
-                if (!k || !n) return Swal.fire('Perhatian', 'Karena kategori Siswa, silakan pilih Kelas dan Nama Siswa terlebih dahulu.', 'warning');
+                if (!k || !n) return Swal.fire('Perhatian', 'Silakan pilih Kelas dan Nama Siswa terkait terlebih dahulu.', 'warning');
                 
-                // Format agar dikenali oleh filter siswa di Dashboard Siswa
                 deskripsiFinal = `Siswa: ${n} (${k}) - Deskripsi: ${deskripsiFinal}`;
             }
 
@@ -736,8 +725,8 @@
                 if(r.success) { 
                     showToast('success','Laporan Terkirim'); 
                     document.getElementById('formKejadian').reset(); 
-                    document.getElementById('kejadianSiswaContainer').classList.add('hidden'); // Sembunyikan form siswa kembali
-                    isDataFetched = false; // Paksa update rekap
+                    document.getElementById('kejadianSiswaContainer').classList.add('hidden');
+                    isDataFetched = false; // Reset rekap
                 } else {
                     Swal.fire('Error', r.message, 'error');
                 }
@@ -773,6 +762,7 @@
         }
 
         function applyHadirFilters() {
+            if(!globalData.kehadiran) return;
             const fKelas = document.getElementById('filterHadirKelas').value;
             const fBulan = document.getElementById('filterHadirBulan').value;
             const fMulai = document.getElementById('filterHadirMulai').value;
@@ -809,7 +799,7 @@
             });
             
             const tbody = document.getElementById('rekapHadirBody');
-            tbody.innerHTML = hadirFilteredData.length === 0 ? '<tr><td colspan="8" class="p-8 text-center text-slate-500 font-medium">Tidak ada data sesuai filter.</td></tr>' 
+            tbody.innerHTML = hadirFilteredData.length === 0 ? '<tr><td colspan="8" class="p-8 text-center text-slate-500 font-medium bg-slate-50">Tidak ada data yang ditemukan. Pastikan ada riwayat kehadiran di database untuk filter yang dipilih.</td></tr>' 
                 : hadirFilteredData.map(c => `
                     <tr class="hover:bg-indigo-50 border-b border-slate-100 transition-colors">
                         <td class="p-3 font-bold text-slate-700 sticky-col bg-white">${c.nama}</td>
@@ -824,13 +814,13 @@
         }
 
         function applyLanggarFilters() {
+            if(!globalData.kejadian) return;
             const fKelas = document.getElementById('filterLanggarKelas') ? document.getElementById('filterLanggarKelas').value : null;
             const fKategori = document.getElementById('filterLanggarKategori').value;
             const fBulan = document.getElementById('filterLanggarBulan').value;
 
             langgarFilteredData = globalData.kejadian;
             if (currentUser.role === 'SISWA') {
-                // Filter cerdas: cari nama siswa di dalam text deskripsi
                 langgarFilteredData = langgarFilteredData.filter(d => d.deskripsi.includes(currentUser.nama));
             } else {
                 if (fKelas) langgarFilteredData = langgarFilteredData.filter(d => d.deskripsi.includes(fKelas)); 
@@ -864,7 +854,7 @@
         }
 
         function renderTrenSemester() {
-            if(!document.getElementById('view-trenSemester')) return;
+            if(!document.getElementById('view-trenSemester') || !globalData.kehadiran) return;
             const semester = document.getElementById('filterTrenSemester').value; 
             const fKelas = document.getElementById('filterTrenKelas').value;
             
@@ -940,6 +930,7 @@
         }
 
         function renderStudentDashboard() {
+            if(!globalData.kehadiran) return;
             const today = new Date(), currentMonth = String(today.getMonth() + 1).padStart(2, '0');
             let H_bulan = 0, total_bulan = 0;
             const myData = globalData.kehadiran.filter(d => d.nama === currentUser.nama && d.kelas === currentUser.kelas);
@@ -1007,6 +998,7 @@
         }
 
         function renderStudentDetailTable(myData = null) {
+            if(!globalData.kehadiran) return;
             if(!myData) myData = globalData.kehadiran.filter(d => d.nama === currentUser.nama && d.kelas === currentUser.kelas);
             const fBulan = document.getElementById('siswaFilterBulan').value;
             if (fBulan) myData = myData.filter(d => d.tanggal && d.tanggal.split('-')[1] === fBulan);
@@ -1055,7 +1047,7 @@
                 </div>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
-                    <!-- KPI Cards with Modern Gradients -->
+                    <!-- KPI Cards -->
                     <div class="bg-gradient-to-br from-indigo-500 to-indigo-600 p-6 rounded-3xl shadow-lg shadow-indigo-200 text-white relative overflow-hidden group">
                         <div class="absolute -right-4 -top-4 w-24 h-24 bg-white opacity-10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
                         <div class="flex items-center space-x-3 mb-4">
@@ -1166,8 +1158,8 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Jam Ke- (Bisa Pilih Banyak)</label>
-                                <div class="grid grid-cols-5 gap-2">
-                                    ${[1,2,3,4,5,6,7,8,9,10].map(i => `
+                                <div class="grid grid-cols-6 gap-2">
+                                    ${[1,2,3,4,5,6,7,8,9,10,11,12].map(i => `
                                     <label class="relative block cursor-pointer group">
                                         <input type="checkbox" value="${i}" class="cb-jam peer sr-only">
                                         <div class="p-2 rounded-lg border-2 border-slate-200 text-center font-bold text-slate-400 group-hover:border-indigo-300 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 transition-all">${i}</div>
@@ -1339,7 +1331,7 @@
                     
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 filter-section">
                         <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Kelas</label><select id="filterHadirKelas" onchange="applyHadirFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"></select></div>
-                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Bulan</label><select id="filterHadirBulan" onchange="applyHadirFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"><option value="">Semua</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option></select></div>
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Bulan</label><select id="filterHadirBulan" onchange="applyHadirFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"><option value="">Semua</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option></select></div>
                         <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Dari</label><input type="date" id="filterHadirMulai" onchange="applyHadirFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold cursor-pointer"></div>
                         <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Sampai</label><input type="date" id="filterHadirAkhir" onchange="applyHadirFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold cursor-pointer"></div>
                     </div>
@@ -1377,7 +1369,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 filter-section">
                         <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Cari Kata Kunci</label><input type="text" id="filterLanggarKelas" onkeyup="applyLanggarFilters()" placeholder="Ketik nama / kelas..." class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 placeholder-slate-400"></div>
                         <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Kategori</label><select id="filterLanggarKategori" onchange="applyLanggarFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"><option value="">Semua Kategori</option><option value="Siswa">Siswa</option><option value="Guru">Guru</option><option value="Sarpras">Sarpras</option></select></div>
-                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Bulan</label><select id="filterLanggarBulan" onchange="applyLanggarFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"><option value="">Semua Bulan</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option></select></div>
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Bulan</label><select id="filterLanggarBulan" onchange="applyLanggarFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"><option value="">Semua Bulan</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option></select></div>
                     </div>
                     
                     <div id="langgarDataContainer" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
