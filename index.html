@@ -143,7 +143,7 @@
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2">Pilih Kelas</label>
                     <select id="publicKelas" onchange="loadPublicStudents()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 text-slate-800 appearance-none cursor-pointer" required>
-                        <option value="">-- Pilih Kelas --</option>
+                        <!-- Diisi otomatis via JS saat init -->
                     </select>
                 </div>
                 <div>
@@ -239,7 +239,9 @@
         let globalData = { kehadiran: [], kejadian: [] };
         let isDataFetched = false;
         
-        // --- DATABASE GURU & MAPEL LOKAL ---
+        // --- DATABASE KELAS & GURU LOKAL (SUPER CEPAT) ---
+        const FIXED_CLASSES = ['XA', 'XB', 'XI ATPH', 'XI ATP', 'XII ATPH', 'XII ATP'];
+        
         const DATA_GURU = {
             "GRU-001": "GUFRON FIRMANSYAH, S.Pd", "GRU-002": "AKHMAD SURYADI, S.Pd.I", "GRU-003": "KRISTANTI PUTIR, S.Pd.K",
             "GRU-004": "KANA MIATI,S.P", "GRU-005": "SYAIFUDDIN, S.Pd", "GRU-006": "AULIA HAKIM YUSLIMA, S.Pd.",
@@ -256,8 +258,6 @@
             "XII ATPH": [{m: "Konsentrasi Keahlian-H", g: "GRU-008"}, {m: "Pendidikan Agama Kristen dan Budi Pekerti", g: "GRU-003"}, {m: "Bahasa Inggris", g: "GRU-005"}, {m: "Matematika", g: "GRU-006"}, {m: "Informatika", g: "GRU-006"}, {m: "Konsentrasi Keahlian-M", g: "GRU-007"}, {m: "Pendidikan Agama Hindu dan Budi Pekerti", g: "GRU-009"}, {m: "Muatan Lokal", g: "GRU-009"}, {m: "Prakarya dan Kewirausahaan", g: "GRU-011"}, {m: "Bahasa Indonesia", g: "GRU-010"}, {m: "Pendidikan Pancasila dan Kewarganegaraan", g: "GRU-010"}, {m: "Pendidikan Agama Islam dan Budi Pekerti", g: "GRU-012"}],
             "XII ATP": [{m: "Konsentrasi Keahlian-S", g: "GRU-002"}, {m: "Pendidikan Agama Kristen dan Budi Pekerti", g: "GRU-003"}, {m: "Bahasa Inggris", g: "GRU-005"}, {m: "Matematika", g: "GRU-006"}, {m: "Informatika", g: "GRU-001"}, {m: "Muatan Lokal", g: "GRU-009"}, {m: "Prakarya dan Kewirausahaan", g: "GRU-011"}, {m: "Bahasa Indonesia", g: "GRU-010"}, {m: "Pendidikan Pancasila dan Kewarganegaraan", g: "GRU-010"}, {m: "Pendidikan Agama Islam dan Budi Pekerti", g: "GRU-012"}, {m: "Konsentrasi Keahlian-A", g: "GRU-013"}, {m: "Konsentrasi Keahlian-S", g: "GRU-014"}]
         };
-
-        const FIXED_CLASSES = ['XA', 'XB', 'XI ATPH', 'XI ATP', 'XII ATPH', 'XII ATP'];
         
         let hadirFilteredData = [], langgarFilteredData = [], trenSemesterData = [];
         let sortColHadir = 'nama', sortAscHadir = true;
@@ -272,9 +272,11 @@
                 let options = { method: 'GET' };
                 if (data) options = { method: 'POST', body: JSON.stringify(data), headers: { 'Content-Type': 'text/plain;charset=utf-8' } };
                 const response = await fetch(url, options);
-                return await response.json();
+                const result = await response.json();
+                return result;
             } catch (error) { 
-                throw new Error("Koneksi ke server gagal. Periksa internet Anda."); 
+                Swal.fire('Koneksi Gagal', 'Tidak dapat terhubung ke server Google. Pastikan URL API sudah benar dan internet Anda aktif.', 'error');
+                throw new Error("Koneksi ke server gagal."); 
             }
         }
 
@@ -304,9 +306,7 @@
         function showStudentPortal() {
             document.getElementById('authSelection').classList.add('hidden'); 
             document.getElementById('studentPortalForm').classList.remove('hidden');
-            const sel = document.getElementById('publicKelas');
-            sel.innerHTML = '<option value="">-- Pilih Kelas Anda --</option>'; 
-            FIXED_CLASSES.forEach(x => sel.add(new Option(x, x))); 
+            populateFormDropdowns(); // Mengisi list kelas seketika
         }
 
         function loadPublicStudents() {
@@ -328,8 +328,7 @@
                     hideLoading(); 
                     if(res.success) { currentUser = res.user; initApp(); } 
                     else Swal.fire({title: 'Gagal', text: res.message, icon: 'error', confirmButtonColor: '#4f46e5'}); 
-                })
-                .catch(err => { hideLoading(); Swal.fire('Error', err.message, 'error'); });
+                });
         }
 
         function handleStudentEntry(e) {
@@ -391,14 +390,18 @@
             
             if(['rekapHadir', 'trenSemester', 'rekapLanggar', 'dashboardSiswa'].includes(viewId)) {
                 if(!isDataFetched) {
-                    fetchSuperData();
+                    fetchSuperData(viewId);
                 } else {
-                    if (viewId === 'rekapHadir') applyHadirFilters();
-                    if (viewId === 'rekapLanggar') applyLanggarFilters();
-                    if (viewId === 'trenSemester') renderTrenSemester();
-                    if (viewId === 'dashboardSiswa') { renderStudentDashboard(); applyLanggarFilters(); }
+                    triggerViewRender(viewId);
                 }
             }
+        }
+
+        function triggerViewRender(viewId) {
+            if (viewId === 'rekapHadir') applyHadirFilters();
+            if (viewId === 'rekapLanggar') applyLanggarFilters();
+            if (viewId === 'trenSemester') renderTrenSemester();
+            if (viewId === 'dashboardSiswa') { renderStudentDashboard(); applyLanggarFilters(); }
         }
 
         function initApp() {
@@ -411,6 +414,7 @@
             document.getElementById('userInitial').innerText = currentUser.nama.charAt(0).toUpperCase();
 
             buildMenusAndViews();
+            populateFormDropdowns(); // Mengisi semua dropdown kelas secara massal & instan
             
             const today = new Date().toISOString().split('T')[0];
             ['dashDate', 'inputHadirTanggal', 'pantauTanggal', 'kejadianTanggal', 'logbookDate'].forEach(id => {
@@ -421,7 +425,6 @@
             if (currentUser.role === 'SISWA') {
                 navigate('dashboardSiswa');
             } else {
-                populateFormDropdowns();
                 navigate('dashboard');
                 updateHariPantau();
             }
@@ -470,30 +473,27 @@
             });
         }
 
-        function fetchSuperData() {
+        function populateFormDropdowns() {
+            // Hardcode 100% cepat tanpa perlu tunggu API untuk Kelas
+            const classDropdowns = ['publicKelas', 'inputHadirKelas', 'pantauKelas', 'kejadianKelas', 'filterHadirKelas', 'filterLanggarKelas', 'filterTrenKelas'];
+            classDropdowns.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) { 
+                    const firstOption = el.id.includes('filter') ? 'Semua Kelas' : '-- Pilih Kelas --';
+                    el.innerHTML = `<option value="">${firstOption}</option>`; 
+                    FIXED_CLASSES.forEach(x => el.add(new Option(x, x))); 
+                }
+            });
+        }
+
+        function fetchSuperData(targetViewId) {
             showLoading("Menarik data historis dari server...");
             apiCall('getSuperData').then(res => {
                 hideLoading();
-                if(res.success) {
+                if(res && res.success) {
                     globalData = res.data;
                     isDataFetched = true;
-                    
-                    ['filterHadirKelas', 'filterLanggarKelas', 'filterTrenKelas'].forEach(id => {
-                        const el = document.getElementById(id);
-                        if(el) { 
-                            el.innerHTML = '<option value="">Semua Kelas</option>'; 
-                            FIXED_CLASSES.forEach(c => el.add(new Option(c, c))); 
-                        }
-                    });
-
-                    if(currentUser.role === 'SISWA') {
-                        renderStudentDashboard();
-                        applyLanggarFilters();
-                    } else {
-                        applyHadirFilters();
-                        applyLanggarFilters();
-                        renderTrenSemester();
-                    }
+                    triggerViewRender(targetViewId); // Trigger render pada halaman yang sedang dibuka
                 }
             });
         }
@@ -514,13 +514,6 @@
                     document.getElementById('kpi-tanpa-tugas').innerText = s.kTanpaTugas;
                     document.getElementById('kpi-kejadian').innerText = s.totalKejadian;
                 }
-            });
-        }
-
-        function populateFormDropdowns() {
-            ['inputHadirKelas', 'pantauKelas'].forEach(id => {
-                const el = document.getElementById(id);
-                if(el) { el.innerHTML = '<option value="">-- Pilih Kelas --</option>'; FIXED_CLASSES.forEach(x => el.add(new Option(x, x))); }
             });
         }
 
@@ -563,7 +556,7 @@
                     showToast('success','Tersimpan!'); 
                     document.getElementById('inputHadirKelas').value=''; 
                     document.getElementById('attendanceListContainer').classList.add('hidden'); 
-                    isDataFetched = false;
+                    isDataFetched = false; // Minta sistem update data grafik
                 } 
             });
         }
@@ -616,7 +609,7 @@
             e.preventDefault();
             
             const checkedJam = Array.from(document.querySelectorAll('.cb-jam:checked')).map(cb => cb.value);
-            if(checkedJam.length === 0) return Swal.fire({title:'Ops!', text:'Pilih minimal 1 jam pelajaran', icon:'warning', confirmButtonColor: '#4f46e5'});
+            if(checkedJam.length === 0) return Swal.fire({title:'Ops!', text:'Pilih minimal 1 jam pelajaran (ceklis kotak)', icon:'warning', confirmButtonColor: '#4f46e5'});
             const jamString = checkedJam.join(', ');
 
             const stat = document.querySelector('input[name="pantauStatus"]:checked').value;
@@ -663,10 +656,47 @@
                 "Khusus": ["Kecelakaan", "Tamu Dinas", "Bencana Alam", "Lainnya"]
             };
             if(subs[k]) subs[k].forEach(x => sel.add(new Option(x,x)));
+
+            // Menampilkan atau Menyembunyikan Blok Identitas Siswa
+            const siswaContainer = document.getElementById('kejadianSiswaContainer');
+            const labelDeskripsi = document.getElementById('labelDeskripsiKejadian');
+            if (siswaContainer) {
+                if (k === 'Siswa') {
+                    siswaContainer.classList.remove('hidden');
+                    labelDeskripsi.innerText = "Kronologi / Deskripsi Singkat";
+                } else {
+                    siswaContainer.classList.add('hidden');
+                    labelDeskripsi.innerText = "Deskripsi Detail Kejadian";
+                }
+            }
+        }
+
+        function loadStudentsForKejadian() {
+            const k = document.getElementById('kejadianKelas').value;
+            const sel = document.getElementById('kejadianNama');
+            if(!k) { sel.innerHTML = '<option value="">-- Pilih Kelas Dahulu --</option>'; return; }
+            sel.innerHTML = '<option value="">Sedang mencari nama...</option>';
+            apiCall('getStudentsByClass', {kelas: k}).then(s => { 
+                sel.innerHTML = '<option value="">-- Pilih Nama Siswa --</option>'; 
+                s.forEach(x => sel.add(new Option(x.nama, x.nama))); 
+            });
         }
 
         function submitKejadian(e) {
             e.preventDefault();
+            const kategoriPilihan = document.getElementById('kejadianKategori').value;
+            let deskripsiFinal = document.getElementById('kejadianDeskripsi').value;
+
+            // Jika Kategori Siswa, Wajib Isi Kelas dan Nama, lalu gabungkan ke Deskripsi
+            if (kategoriPilihan === 'Siswa') {
+                const k = document.getElementById('kejadianKelas').value;
+                const n = document.getElementById('kejadianNama').value;
+                if (!k || !n) return Swal.fire('Perhatian', 'Karena kategori Siswa, silakan pilih Kelas dan Nama Siswa terlebih dahulu.', 'warning');
+                
+                // Format agar dikenali oleh filter siswa di Dashboard Siswa
+                deskripsiFinal = `Siswa: ${n} (${k}) - Deskripsi: ${deskripsiFinal}`;
+            }
+
             const fileInput = document.getElementById('kejadianFile');
             const file = fileInput ? fileInput.files[0] : null;
 
@@ -676,9 +706,12 @@
             }
 
             const payload = {
-                tanggal: document.getElementById('kejadianTanggal').value, kategori: document.getElementById('kejadianKategori').value,
-                subKategori: document.getElementById('kejadianSubKategori').value, deskripsi: document.getElementById('kejadianDeskripsi').value,
-                tindakLanjut: document.getElementById('kejadianTindakLanjut').value, penginput: currentUser.nama,
+                tanggal: document.getElementById('kejadianTanggal').value, 
+                kategori: kategoriPilihan,
+                subKategori: document.getElementById('kejadianSubKategori').value, 
+                deskripsi: deskripsiFinal,
+                tindakLanjut: document.getElementById('kejadianTindakLanjut').value, 
+                penginput: currentUser.nama,
                 fileData: null, fileName: null, fileMimeType: null
             };
 
@@ -703,7 +736,8 @@
                 if(r.success) { 
                     showToast('success','Laporan Terkirim'); 
                     document.getElementById('formKejadian').reset(); 
-                    isDataFetched = false;
+                    document.getElementById('kejadianSiswaContainer').classList.add('hidden'); // Sembunyikan form siswa kembali
+                    isDataFetched = false; // Paksa update rekap
                 } else {
                     Swal.fire('Error', r.message, 'error');
                 }
@@ -738,7 +772,6 @@
             });
         }
 
-        // --- Analitik: Rekap & Tren ---
         function applyHadirFilters() {
             const fKelas = document.getElementById('filterHadirKelas').value;
             const fBulan = document.getElementById('filterHadirBulan').value;
@@ -797,7 +830,8 @@
 
             langgarFilteredData = globalData.kejadian;
             if (currentUser.role === 'SISWA') {
-                langgarFilteredData = langgarFilteredData.filter(d => d.deskripsi.includes(currentUser.nama) || d.kategori === 'Siswa');
+                // Filter cerdas: cari nama siswa di dalam text deskripsi
+                langgarFilteredData = langgarFilteredData.filter(d => d.deskripsi.includes(currentUser.nama));
             } else {
                 if (fKelas) langgarFilteredData = langgarFilteredData.filter(d => d.deskripsi.includes(fKelas)); 
             }
@@ -812,7 +846,7 @@
 
             container.innerHTML = langgarFilteredData.sort((a,b) => new Date(b.tanggal) - new Date(a.tanggal)).map(row => {
                 let badgeColor = row.kategori === 'Siswa' ? 'bg-red-100 text-red-800' : (row.kategori === 'Guru' ? 'bg-orange-100 text-orange-800' : 'bg-yellow-100 text-yellow-800');
-                let linkDoc = row.dokumentasi ? `<a href="${row.dokumentasi}" target="_blank" class="text-indigo-600 underline text-xs font-bold mt-2 inline-block">Lihat Lampiran</a>` : '';
+                let linkDoc = row.dokumentasi ? `<a href="${row.dokumentasi}" target="_blank" class="text-indigo-600 underline text-xs font-bold mt-2 inline-block">Lihat Lampiran Bukti</a>` : '';
                 return `
                     <div class="border border-slate-200 rounded-2xl p-5 hover:shadow-lg transition-shadow bg-white relative overflow-hidden break-inside-avoid">
                         <div class="absolute top-0 left-0 w-2 h-full ${badgeColor.split(' ')[0]}"></div>
@@ -821,7 +855,7 @@
                             <span class="px-3 py-1 text-xs font-extrabold rounded-lg ${badgeColor} mt-3 sm:mt-0">${row.kategori}</span>
                         </div>
                         <div class="bg-slate-50 rounded-xl p-4 text-sm pl-5 ml-2 border border-slate-100">
-                            <p class="mb-2 text-slate-700 leading-relaxed"><span class="font-bold text-slate-800 block mb-1">📝 Deskripsi:</span> ${row.deskripsi}</p>
+                            <p class="mb-2 text-slate-700 leading-relaxed whitespace-pre-line"><span class="font-bold text-slate-800 block mb-1">📝 Detail:</span> ${row.deskripsi}</p>
                             <p class="text-slate-700"><span class="font-bold text-slate-800 block mb-1">✅ Tindak Lanjut:</span> <span class="text-indigo-600 font-semibold">${row.tindakLanjut}</span></p>
                             ${linkDoc}
                         </div>
@@ -1218,7 +1252,7 @@
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
                     <div class="flex items-center mb-6 border-b border-slate-100 pb-4">
                         <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center mr-4 text-xl">⚠️</div>
-                        <h2 class="text-xl font-extrabold text-slate-800">Lapor Kejadian / Masalah</h2>
+                        <h2 class="text-xl font-extrabold text-slate-800">Lapor Kejadian / Pelanggaran</h2>
                     </div>
                     
                     <form id="formKejadian" onsubmit="submitKejadian(event)" class="space-y-5">
@@ -1228,26 +1262,43 @@
                             <div>
                                 <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Kategori Utama</label>
                                 <select id="kejadianKategori" required onchange="updateSubKategori()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 font-bold appearance-none">
-                                    <option value="">-- Pilih --</option><option value="Siswa">Siswa</option><option value="Guru">Guru</option><option value="Sarpras">Sarpras & Lingkungan</option><option value="Khusus">Kejadian Khusus</option>
+                                    <option value="">-- Pilih --</option><option value="Siswa">Siswa (Pelanggaran/Kasus)</option><option value="Guru">Guru</option><option value="Sarpras">Sarpras & Lingkungan</option><option value="Khusus">Kejadian Khusus</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Rincian Masalah</label>
+                                <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Rincian / Bobot</label>
                                 <select id="kejadianSubKategori" required class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 font-bold appearance-none">
                                     <option value="">-- Pilih Kategori Dahulu --</option>
                                 </select>
                             </div>
                         </div>
 
-                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Deskripsi Detail</label><textarea id="kejadianDeskripsi" required rows="4" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 placeholder-slate-400" placeholder="Ceritakan detail kejadian secara singkat dan jelas..."></textarea></div>
-                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Tindakan yang Telah Dilakukan</label><input type="text" id="kejadianTindakLanjut" required class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 placeholder-slate-400" placeholder="Cth: Menghubungi wali kelas / Memanggil teknisi"></div>
+                        <!-- Form Khusus Kategori Siswa -->
+                        <div id="kejadianSiswaContainer" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-5 bg-rose-50 p-5 rounded-2xl border border-rose-100">
+                            <div class="col-span-full mb-1"><p class="text-sm font-bold text-rose-800">Identitas Siswa Terkait:</p></div>
+                            <div>
+                                <label class="block text-xs font-extrabold text-rose-600 uppercase tracking-wider mb-2">Kelas</label>
+                                <select id="kejadianKelas" onchange="loadStudentsForKejadian()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-white font-bold appearance-none border-rose-200">
+                                    <option value="">-- Pilih Kelas --</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-extrabold text-rose-600 uppercase tracking-wider mb-2">Nama Siswa</label>
+                                <select id="kejadianNama" class="input-modern w-full px-4 py-3.5 rounded-xl bg-white font-bold appearance-none border-rose-200">
+                                    <option value="">-- Pilih Kelas Dahulu --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div><label id="labelDeskripsiKejadian" class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Deskripsi Detail Kejadian</label><textarea id="kejadianDeskripsi" required rows="3" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 placeholder-slate-400" placeholder="Ketik bentuk pelanggaran atau kronologi kejadian..."></textarea></div>
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Tindakan / Sanksi yang Diberikan</label><input type="text" id="kejadianTindakLanjut" required class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 placeholder-slate-400" placeholder="Cth: Teguran lisan / Pemanggilan ortu / Diperbaiki"></div>
                         
                         <div>
                             <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Dokumentasi (Maks 10MB) <span class="text-slate-400 font-medium">*Opsional</span></label>
                             <input type="file" id="kejadianFile" accept="image/*,.pdf" class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-rose-50 file:text-rose-700 hover:file:bg-rose-100 cursor-pointer bg-slate-50">
                         </div>
 
-                        <button type="submit" class="btn-modern w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-rose-200 mt-4 text-lg">Kirim Laporan Kejadian</button>
+                        <button type="submit" class="btn-modern w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-rose-200 mt-4 text-lg">Catat & Simpan Laporan</button>
                     </form>
                 </div>
             </div>`;
