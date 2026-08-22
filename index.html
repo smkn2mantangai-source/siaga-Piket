@@ -86,7 +86,6 @@
 </head>
 <body class="text-slate-800 antialiased h-[100dvh] flex overflow-hidden selection:bg-indigo-100 selection:text-indigo-900">
 
-    <!-- Loading Overlay -->
     <div id="loadingOverlay" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[10000] flex flex-col items-center justify-center transition-opacity">
         <div class="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center">
             <div class="loader mb-4"></div>
@@ -141,12 +140,12 @@
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2">Pilih Kelas</label>
-                    <select id="publicKelas" onchange="loadPublicStudents()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 text-slate-800 appearance-none cursor-pointer" required>
+                    <select id="publicKelas" onchange="loadPublicStudents()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 text-slate-800 cursor-pointer" required>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2">Nama Siswa</label>
-                    <select id="publicNama" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 text-slate-800 appearance-none cursor-pointer" required>
+                    <select id="publicNama" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 text-slate-800 cursor-pointer" required>
                         <option value="">-- Pilih Kelas Dahulu --</option>
                     </select>
                 </div>
@@ -158,7 +157,6 @@
         </div>
     </div>
 
-    <!-- App Wrapper -->
     <div id="appWrapper" class="hidden h-full w-full flex overflow-hidden">
 
     <!-- Mobile Sidebar Backdrop -->
@@ -247,13 +245,12 @@
             "XII ATP": [{m: "Konsentrasi Keahlian-S", g: "GRU-002"}, {m: "Pendidikan Agama Kristen dan Budi Pekerti", g: "GRU-003"}, {m: "Bahasa Inggris", g: "GRU-005"}, {m: "Matematika", g: "GRU-006"}, {m: "Informatika", g: "GRU-001"}, {m: "Muatan Lokal", g: "GRU-009"}, {m: "Prakarya dan Kewirausahaan", g: "GRU-011"}, {m: "Bahasa Indonesia", g: "GRU-010"}, {m: "Pendidikan Pancasila dan Kewarganegaraan", g: "GRU-010"}, {m: "Pendidikan Agama Islam dan Budi Pekerti", g: "GRU-012"}, {m: "Konsentrasi Keahlian-A", g: "GRU-013"}, {m: "Konsentrasi Keahlian-S", g: "GRU-014"}]
         };
         
-        let hadirFilteredData = [], langgarFilteredData = [], trenSemesterData = [];
+        let hadirFilteredData = [], langgarFilteredData = [], pelanggaranSiswaFilteredData = [], trenSemesterData = [];
         let sortColHadir = 'nama', sortAscHadir = true;
         let sortColTren = 'nama', sortAscTren = true;
         let currentMonthsInfo = [];
         let siswaChartInstance = null;
 
-        // --- Core API Caller (Selalu Menggunakan POST) ---
         async function apiCall(action, data = {}) {
             if (API_URL === 'PASTE_LINK_API_ANDA_DISINI_NANTI' || API_URL === '') {
                 console.warn("MODE PRATINJAU: URL API belum diatur. Menggunakan data simulasi.");
@@ -263,7 +260,7 @@
             try {
                 let url = API_URL + '?action=' + action;
                 let payloadData = data || {};
-                payloadData.action = action; // sertakan action di payload
+                payloadData.action = action;
                 
                 let options = { 
                     method: 'POST', 
@@ -281,7 +278,6 @@
             }
         }
 
-        // --- Mock Data Generator ---
         function getMockData(action, data) {
             const today = new Date().toISOString().split('T')[0];
             switch(action) {
@@ -304,7 +300,7 @@
                         success: true, 
                         data: { 
                             pemantauan: [{kelas: 'XA', jam: '1, 2', mapel: 'Informatika', guru: 'GUFRON FIRMANSYAH, S.Pd', status: 'Pembelajaran berlangsung dengan guru', tugas: '-', piket: 'Guru Piket (Demo)'}], 
-                            kejadian: [{kategori: 'Siswa', sub: 'Terlambat', deskripsi: 'Siswa: Ahmad Jailani (XA) - Datang telat 15 menit', tindakLanjut: 'Teguran lisan', piket: 'Guru Piket (Demo)', dokumentasi: ''}]
+                            kejadian: [{kategori: 'Siswa', sub: 'Ringan - Terlambat', deskripsi: 'Siswa: Ahmad Jailani (XA) - Datang telat 15 menit', tindakLanjut: 'Teguran lisan', piket: 'Guru Piket (Demo)', dokumentasi: 'https://placehold.co/600x400/e2e8f0/1e293b?text=Bukti+Foto+Keterlambatan'}]
                         } 
                     };
                 case 'getSuperData':
@@ -319,7 +315,9 @@
                                 {tanggal: '2026-10-05', nama: 'Ahmad Jailani', kelas: 'XA', status: 'A', keterangan: ''},
                             ],
                             kejadian: [
-                                {tanggal: today, kategori: 'Siswa', sub: 'Terlambat', deskripsi: 'Siswa: Budi Santoso (XA) - Datang telat 15 menit', tindakLanjut: 'Teguran lisan', piket: 'Guru Piket (Demo)', dokumentasi: ''}
+                                {tanggal: today, kategori: 'Siswa', sub: 'Ringan - Terlambat', deskripsi: 'Siswa: Budi Santoso (XA) - Datang telat 15 menit', tindakLanjut: 'Teguran lisan', piket: 'Guru Piket (Demo)', dokumentasi: 'https://placehold.co/600x400/e2e8f0/1e293b?text=Bukti+Foto+Keterlambatan'},
+                                {tanggal: '2026-08-20', kategori: 'Siswa', sub: 'Ringan - Atribut Tidak Lengkap', deskripsi: 'Siswa: Ahmad Jailani (XA) - Tidak memakai dasi dan sabuk', tindakLanjut: 'Peringatan ringan', piket: 'Guru Piket (Demo)', dokumentasi: ''},
+                                {tanggal: '2026-08-21', kategori: 'Siswa', sub: 'Sedang - Membolos', deskripsi: 'Siswa: Ahmad Jailani (XA) - Membolos saat jam pelajaran ke 5-6', tindakLanjut: 'Surat Peringatan I & Panggil Ortu', piket: 'Guru Piket (Demo)', dokumentasi: 'https://placehold.co/600x400/eef2ff/4f46e5?text=Bukti+Foto+Lokasi+Bolos'}
                             ]
                         }
                     };
@@ -328,7 +326,6 @@
             }
         }
 
-        // --- UI Utilities ---
         function showLoading(text="Memproses...") { 
             document.getElementById('loadingText').innerText = text; 
             document.getElementById('loadingOverlay').classList.remove('hidden'); 
@@ -338,6 +335,34 @@
         }
         function showToast(icon, title) { 
             Swal.fire({ toast: true, position: 'top-end', icon: icon, title: title, showConfirmButton: false, timer: 3000, timerProgressBar: true }); 
+        }
+
+        function previewDokumentasi(url) {
+            if (!url) return;
+            
+            let viewUrl = url;
+            if (url.includes('drive.google.com/file/d/')) {
+                const fileId = url.split('/d/')[1].split('/')[0];
+                viewUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
+            }
+
+            Swal.fire({
+                title: '📷 Bukti Dokumentasi',
+                html: `
+                    <div class="mt-3 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-2">
+                        <img src="${viewUrl}" alt="Bukti Dokumentasi" class="max-h-[60vh] w-full object-contain rounded-xl mx-auto shadow-sm" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'p-6 text-center text-slate-500\'><p class=\'font-bold text-slate-700 mb-2\'>📁 Dokumen / File Lampiran</p><p class=\'text-xs mb-4\'>Preview gambar tidak dapat dimuat secara langsung.</p><a href=\'${url}\' target=\'_blank\' class=\'inline-block px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-md hover:bg-indigo-700 transition-all\'>Buka / Download File ↗</a></div>';">
+                    </div>
+                    <div class="mt-4 text-center">
+                        <a href="${url}" target="_blank" class="text-xs text-indigo-600 font-bold underline hover:text-indigo-800">Buka Link Asli di Tab Baru ↗</a>
+                    </div>
+                `,
+                showConfirmButton: true,
+                confirmButtonText: 'Tutup',
+                confirmButtonColor: '#4f46e5',
+                customClass: {
+                    popup: 'rounded-3xl p-6',
+                }
+            });
         }
         
         function showAuthSelection() { 
@@ -392,7 +417,6 @@
             }).then((result) => { if (result.isConfirmed) location.reload(); });
         }
 
-        // --- Sidebar Logic ---
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
@@ -425,7 +449,7 @@
             if(viewId === 'dashboard') loadDashboardPiket();
             if(viewId === 'logbook') fetchLogbook();
             
-            if(['rekapHadir', 'trenSemester', 'rekapLanggar', 'dashboardSiswa'].includes(viewId)) {
+            if(['rekapHadir', 'rekapPelanggaranSiswa', 'trenSemester', 'rekapLanggar', 'dashboardSiswa'].includes(viewId)) {
                 if(!isDataFetched) {
                     fetchSuperData(viewId);
                 } else {
@@ -436,9 +460,10 @@
 
         function triggerViewRender(viewId) {
             if (viewId === 'rekapHadir') applyHadirFilters();
+            if (viewId === 'rekapPelanggaranSiswa') applyPelanggaranSiswaFilters();
             if (viewId === 'rekapLanggar') applyLanggarFilters();
             if (viewId === 'trenSemester') renderTrenSemester();
-            if (viewId === 'dashboardSiswa') { renderStudentDashboard(); applyLanggarFilters(); }
+            if (viewId === 'dashboardSiswa') { renderStudentDashboard(); applyPelanggaranSiswaFilters(); }
         }
 
         function initApp() {
@@ -472,9 +497,9 @@
             if (currentUser.role === 'SISWA') {
                 menus = [
                     { id: 'dashboardSiswa', label: 'Dashboard Saya', icon: '🏠', type: 'menu' },
-                    { id: 'rekapLanggar', label: 'Riwayat Kedisiplinan', icon: '🚨', type: 'menu' }
+                    { id: 'rekapPelanggaranSiswa', label: 'Riwayat Kedisiplinan', icon: '🚨', type: 'menu' }
                 ];
-                viewContainer.insertAdjacentHTML('beforeend', getViewDashboardSiswa() + getViewRekapLanggar());
+                viewContainer.insertAdjacentHTML('beforeend', getViewDashboardSiswa() + getViewPelanggaranSiswa());
             } else {
                 menus = [
                     { label: 'Operasional', type: 'header' },
@@ -486,10 +511,11 @@
                     { label: 'Laporan & Analitik', type: 'header' },
                     { id: 'logbook', label: 'Logbook Harian', icon: '📔', type: 'menu' },
                     { id: 'rekapHadir', label: 'Rekap Kehadiran', icon: '📊', type: 'menu' },
+                    { id: 'rekapPelanggaranSiswa', label: 'Pelanggaran Siswa', icon: '🚨', type: 'menu' },
                     { id: 'rekapLanggar', label: 'Jurnal Sekolah', icon: '📜', type: 'menu' },
                     { id: 'trenSemester', label: 'Tren Semester', icon: '📈', type: 'menu' }
                 ];
-                viewContainer.insertAdjacentHTML('beforeend', getViewDashboardPiket() + getViewInputHadir() + getViewPemantauan() + getViewKejadian() + getViewLogbook() + getViewRekapHadir() + getViewRekapLanggar() + getViewTrenSemester());
+                viewContainer.insertAdjacentHTML('beforeend', getViewDashboardPiket() + getViewInputHadir() + getViewPemantauan() + getViewKejadian() + getViewLogbook() + getViewRekapHadir() + getViewPelanggaranSiswa() + getViewRekapLanggar() + getViewTrenSemester());
             }
 
             menus.forEach(m => {
@@ -505,7 +531,7 @@
         }
 
         function populateFormDropdowns() {
-            const classDropdowns = ['publicKelas', 'inputHadirKelas', 'pantauKelas', 'kejadianKelas', 'filterHadirKelas', 'filterLanggarKelas', 'filterTrenKelas'];
+            const classDropdowns = ['publicKelas', 'inputHadirKelas', 'pantauKelas', 'kejadianKelas', 'filterHadirKelas', 'filterPelanggaranKelas', 'filterLanggarKelas', 'filterTrenKelas'];
             classDropdowns.forEach(id => {
                 const el = document.getElementById(id);
                 if(el) { 
@@ -685,9 +711,19 @@
         function updateSubKategori() {
             const k = document.getElementById('kejadianKategori').value;
             const sel = document.getElementById('kejadianSubKategori');
-            sel.innerHTML = '<option value="">-- Pilih Rincian --</option>';
+            sel.innerHTML = '<option value="">-- Pilih Tingkat / Rincian --</option>';
             const subs = {
-                "Siswa": ["Terlambat", "Atribut Tidak Lengkap", "Membolos", "Berkelahi", "Sakit di Sekolah", "Lainnya"],
+                "Siswa": [
+                    "Ringan - Terlambat",
+                    "Ringan - Atribut Tidak Lengkap",
+                    "Ringan - Kerapian & Kebersihan",
+                    "Sedang - Membolos / Tanpa Izin",
+                    "Sedang - Merokok / Vape di Sekolah",
+                    "Sedang - Meninggalkan Kelas saat Jam Pelajaran",
+                    "Berat - Berkelahi / Penganiayaan",
+                    "Berat - Miras / Narkoba / Tindak Kriminal",
+                    "Berat - Perusakan Fasilitas / Sarpras Sekolah"
+                ],
                 "Guru": ["Terlambat Masuk Kelas", "Meninggalkan Kelas", "Tukar Jam", "Lainnya"],
                 "Sarpras": ["Listrik Padam", "Internet Mati", "Proyektor Rusak", "Fasilitas Kotor", "Lainnya"],
                 "Khusus": ["Kecelakaan", "Tamu Dinas", "Bencana Alam", "Lainnya"]
@@ -796,7 +832,7 @@
                             ${p.length===0 ? '<p class="text-sm italic text-slate-500 pl-2">Tidak ada catatan pemantauan hari ini.</p>' : `<div class="overflow-x-auto rounded-xl border border-slate-200"><table class="w-full text-sm border-collapse"><tr class="bg-slate-50 text-left"><th class="p-3 border-b">Kelas</th><th class="p-3 border-b">Jam</th><th class="p-3 border-b">Mapel</th><th class="p-3 border-b">Guru</th><th class="p-3 border-b">Status</th><th class="p-3 border-b">Tugas</th></tr>${p.map(x=>`<tr class="hover:bg-slate-50"><td class="p-3 border-b font-medium">${x.kelas}</td><td class="p-3 border-b">${x.jam}</td><td class="p-3 border-b">${x.mapel}</td><td class="p-3 border-b">${x.guru}</td><td class="p-3 border-b font-semibold ${x.status==='Pembelajaran berlangsung dengan guru'?'text-green-600':'text-red-600'}">${x.status}</td><td class="p-3 border-b">${x.tugas}</td></tr>`).join('')}</table></div>`}
                         </div>
                         <div class="mb-8"><h3 class="font-extrabold text-slate-800 mb-4 bg-slate-100 p-3 rounded-xl border border-slate-200">⚠️ LAPORAN KEJADIAN</h3>
-                            ${k.length===0 ? '<p class="text-sm italic text-slate-500 pl-2">Tidak ada laporan kejadian hari ini.</p>' : `<ul class="space-y-4">${k.map(x=>`<li class="border border-slate-200 rounded-xl p-4 bg-white shadow-sm"><div class="flex items-center gap-2 mb-2"><span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs font-bold rounded">${x.kategori}</span><span class="font-bold text-slate-800">${x.sub}</span> ${x.dokumentasi ? `<a href="${x.dokumentasi}" target="_blank" class="text-xs text-blue-600 underline">Lihat Foto</a>` : ''}</div><div class="text-sm text-slate-600 mb-2">${x.deskripsi}</div><div class="text-xs bg-slate-50 p-2 rounded border border-slate-100"><span class="font-bold text-slate-700">Tindak Lanjut:</span> ${x.tindakLanjut}</div></li>`).join('')}</ul>`}
+                            ${k.length===0 ? '<p class="text-sm italic text-slate-500 pl-2">Tidak ada laporan kejadian hari ini.</p>' : `<ul class="space-y-4">${k.map(x=>`<li class="border border-slate-200 rounded-xl p-4 bg-white shadow-sm"><div class="flex items-center gap-2 mb-2"><span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs font-bold rounded">${x.kategori}</span><span class="font-bold text-slate-800">${x.sub}</span> ${x.dokumentasi ? `<button onclick="previewDokumentasi('${x.dokumentasi}')" class="text-xs text-indigo-600 underline font-bold ml-auto">🖼️ Lihat Preview Foto</button>` : ''}</div><div class="text-sm text-slate-600 mb-2">${x.deskripsi}</div><div class="text-xs bg-slate-50 p-2 rounded border border-slate-100"><span class="font-bold text-slate-700">Tindak Lanjut:</span> ${x.tindakLanjut}</div></li>`).join('')}</ul>`}
                         </div>
                         <div class="mt-20 flex justify-between px-10 text-sm text-center">
                             <div><p class="mb-20 font-medium text-slate-600">Mengetahui,<br><span class="font-bold text-slate-800">Kepala Sekolah</span></p><p class="font-extrabold border-b-2 border-slate-800 inline-block w-48"></p></div>
@@ -859,6 +895,75 @@
                     </tr>`).join('');
         }
 
+        function applyPelanggaranSiswaFilters() {
+            if(!globalData || !globalData.kejadian) return;
+            const fKelas = document.getElementById('filterPelanggaranKelas') ? document.getElementById('filterPelanggaranKelas').value : '';
+            const fJenis = document.getElementById('filterPelanggaranJenis') ? document.getElementById('filterPelanggaranJenis').value : '';
+            const fBulan = document.getElementById('filterPelanggaranBulan') ? document.getElementById('filterPelanggaranBulan').value : '';
+            const fSearch = document.getElementById('filterPelanggaranSearch') ? document.getElementById('filterPelanggaranSearch').value.toLowerCase() : '';
+
+            let data = globalData.kejadian.filter(d => d.kategori === 'Siswa');
+
+            if (currentUser.role === 'SISWA') {
+                data = data.filter(d => d.deskripsi && d.deskripsi.includes(currentUser.nama));
+            } else {
+                if (fKelas) data = data.filter(d => d.deskripsi && d.deskripsi.includes(`(${fKelas})`));
+            }
+
+            if (fJenis) {
+                data = data.filter(d => (d.sub && d.sub.toLowerCase().includes(fJenis.toLowerCase())) || (d.deskripsi && d.deskripsi.toLowerCase().includes(fJenis.toLowerCase())));
+            }
+            if (fBulan) data = data.filter(d => d.tanggal && d.tanggal.split('-')[1] === fBulan);
+            if (fSearch) data = data.filter(d => (d.deskripsi && d.deskripsi.toLowerCase().includes(fSearch)) || (d.tindakLanjut && d.tindakLanjut.toLowerCase().includes(fSearch)) || (d.sub && d.sub.toLowerCase().includes(fSearch)));
+
+            const statTotal = document.getElementById('statTotalPelanggaranSiswa');
+            if(statTotal) statTotal.innerText = data.length;
+
+            const container = document.getElementById('pelanggaranSiswaDataContainer');
+            if(!container) return;
+
+            if (data.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center p-10 bg-emerald-50 rounded-2xl border border-emerald-200"><div class="text-5xl mb-4">🎉</div><h3 class="text-emerald-800 font-extrabold text-xl">Tidak Ada Catatan Pelanggaran!</h3><p class="text-emerald-700 mt-2 font-medium">Siswa terbukti disiplin. Tidak ditemukan catatan pelanggaran untuk kriteria filter yang dipilih.</p></div>';
+                return;
+            }
+
+            container.innerHTML = data.sort((a,b) => new Date(b.tanggal) - new Date(a.tanggal)).map(row => {
+                let badgeClass = "bg-emerald-100 text-emerald-800 border-emerald-300";
+                let sideBg = "bg-emerald-500";
+                
+                const subText = (row.sub || '').toLowerCase();
+                if (subText.includes('sedang')) {
+                    badgeClass = "bg-amber-100 text-amber-800 border-amber-300";
+                    sideBg = "bg-amber-500";
+                } else if (subText.includes('berat')) {
+                    badgeClass = "bg-rose-100 text-rose-800 border-rose-300";
+                    sideBg = "bg-rose-500";
+                } else if (subText.includes('ringan')) {
+                    badgeClass = "bg-emerald-100 text-emerald-800 border-emerald-300";
+                    sideBg = "bg-emerald-500";
+                }
+
+                let btnDoc = row.dokumentasi ? `<button onclick="previewDokumentasi('${row.dokumentasi}')" class="mt-3 inline-flex items-center px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 text-xs font-bold transition-all shadow-sm"><span class="mr-1.5">🖼️</span> Preview Dokumentasi</button>` : '';
+
+                return `
+                    <div class="border border-slate-200 rounded-2xl p-5 hover:shadow-lg transition-shadow bg-white relative overflow-hidden break-inside-avoid">
+                        <div class="absolute top-0 left-0 w-2 h-full ${sideBg}"></div>
+                        <div class="flex flex-col sm:flex-row justify-between items-start mb-4 pl-3">
+                            <div>
+                                <h4 class="font-extrabold text-slate-800 text-lg">${row.sub}</h4>
+                                <p class="text-xs font-semibold text-slate-500 mt-1">📅 ${row.tanggal} &bull; Pelapor: ${row.piket}</p>
+                            </div>
+                            <span class="px-3 py-1 text-xs font-extrabold rounded-lg border ${badgeClass} mt-3 sm:mt-0">${row.sub}</span>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl p-4 text-sm pl-5 ml-2 border border-slate-100">
+                            <p class="mb-2 text-slate-700 leading-relaxed whitespace-pre-line"><span class="font-bold text-slate-800 block mb-1">📝 Detail:</span> ${row.deskripsi}</p>
+                            <p class="text-slate-700"><span class="font-bold text-slate-800 block mb-1">✅ Tindak Lanjut / Sanksi:</span> <span class="text-indigo-600 font-semibold">${row.tindakLanjut}</span></p>
+                            ${btnDoc}
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
         function applyLanggarFilters() {
             if(!globalData || !globalData.kejadian) return;
             const fKelas = document.getElementById('filterLanggarKelas') ? document.getElementById('filterLanggarKelas').value : null;
@@ -875,6 +980,8 @@
             if (fBulan) langgarFilteredData = langgarFilteredData.filter(d => d.tanggal && d.tanggal.split('-')[1] === fBulan);
 
             const container = document.getElementById('langgarDataContainer');
+            if(!container) return;
+            
             if (langgarFilteredData.length === 0) {
                 container.innerHTML = '<div class="col-span-full text-center p-10 bg-green-50 rounded-2xl border border-green-200"><div class="text-5xl mb-4">🎉</div><h3 class="text-green-800 font-extrabold text-xl">Luar Biasa!</h3><p class="text-green-700 mt-2 font-medium">Tidak ada catatan kejadian/pelanggaran sesuai filter.</p></div>';
                 return;
@@ -882,7 +989,7 @@
 
             container.innerHTML = langgarFilteredData.sort((a,b) => new Date(b.tanggal) - new Date(a.tanggal)).map(row => {
                 let badgeColor = row.kategori === 'Siswa' ? 'bg-red-100 text-red-800' : (row.kategori === 'Guru' ? 'bg-orange-100 text-orange-800' : 'bg-yellow-100 text-yellow-800');
-                let linkDoc = row.dokumentasi ? `<a href="${row.dokumentasi}" target="_blank" class="text-indigo-600 underline text-xs font-bold mt-2 inline-block">Lihat Lampiran Bukti</a>` : '';
+                let btnDoc = row.dokumentasi ? `<button onclick="previewDokumentasi('${row.dokumentasi}')" class="mt-3 inline-flex items-center px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 text-xs font-bold transition-all shadow-sm"><span class="mr-1.5">🖼️</span> Preview Dokumentasi</button>` : '';
                 return `
                     <div class="border border-slate-200 rounded-2xl p-5 hover:shadow-lg transition-shadow bg-white relative overflow-hidden break-inside-avoid">
                         <div class="absolute top-0 left-0 w-2 h-full ${badgeColor.split(' ')[0]}"></div>
@@ -893,7 +1000,7 @@
                         <div class="bg-slate-50 rounded-xl p-4 text-sm pl-5 ml-2 border border-slate-100">
                             <p class="mb-2 text-slate-700 leading-relaxed whitespace-pre-line"><span class="font-bold text-slate-800 block mb-1">📝 Detail:</span> ${row.deskripsi}</p>
                             <p class="text-slate-700"><span class="font-bold text-slate-800 block mb-1">✅ Tindak Lanjut:</span> <span class="text-indigo-600 font-semibold">${row.tindakLanjut}</span></p>
-                            ${linkDoc}
+                            ${btnDoc}
                         </div>
                     </div>`;
             }).join('');
@@ -947,6 +1054,8 @@
 
         function executeSortTren() {
             const trHeader = document.getElementById('trenHeaderRow');
+            if(!trHeader) return;
+            
             let headerHTML = `<th class="p-3 font-bold cursor-pointer hover:bg-indigo-100 transition-colors" onclick="sortTren('nama')">Nama Siswa <span class="sort-icon">${sortColTren === 'nama' ? (sortAscTren ? '▲' : '▼') : ''}</span></th>
                               <th class="p-3 font-bold text-center border-l border-indigo-100 cursor-pointer hover:bg-indigo-100 transition-colors" onclick="sortTren('kelas')">Kelas <span class="sort-icon">${sortColTren === 'kelas' ? (sortAscTren ? '▲' : '▼') : ''}</span></th>`;
             
@@ -1148,7 +1257,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
                         <div>
                             <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Pilih Kelas</label>
-                            <select id="inputHadirKelas" onchange="loadStudentsForAttendance()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 text-slate-800 font-bold appearance-none cursor-pointer"></select>
+                            <select id="inputHadirKelas" onchange="loadStudentsForAttendance()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 text-slate-800 font-bold cursor-pointer"></select>
                         </div>
                         <div>
                             <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Tanggal Input</label>
@@ -1199,7 +1308,7 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             <div>
                                 <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Kelas</label>
-                                <select id="pantauKelas" required onchange="loadMapelByKelas()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"></select>
+                                <select id="pantauKelas" required onchange="loadMapelByKelas()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 font-bold cursor-pointer"></select>
                             </div>
                             <div>
                                 <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Jam Ke- (Bisa Pilih Banyak)</label>
@@ -1217,7 +1326,7 @@
                         <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 rounded-2xl border border-indigo-100 flex flex-col sm:flex-row gap-4 shadow-sm">
                             <div class="flex-1">
                                 <label class="text-xs font-bold text-indigo-600 uppercase tracking-wider">Mata Pelajaran</label>
-                                <select id="pantauMapel" required onchange="updateGuruPantau()" class="w-full mt-1 bg-transparent font-black text-slate-800 text-lg border-b-2 border-indigo-200 focus:border-indigo-500 outline-none appearance-none cursor-pointer pb-1">
+                                <select id="pantauMapel" required onchange="updateGuruPantau()" class="w-full mt-1 bg-transparent font-black text-slate-800 text-lg border-b-2 border-indigo-200 focus:border-indigo-500 outline-none cursor-pointer pb-1">
                                     <option value="">-- Pilih Kelas Dahulu --</option>
                                 </select>
                             </div>
@@ -1298,13 +1407,13 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             <div>
                                 <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Kategori Utama</label>
-                                <select id="kejadianKategori" required onchange="updateSubKategori()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 font-bold appearance-none">
+                                <select id="kejadianKategori" required onchange="updateSubKategori()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 font-bold">
                                     <option value="">-- Pilih --</option><option value="Siswa">Siswa (Pelanggaran/Kasus)</option><option value="Guru">Guru</option><option value="Sarpras">Sarpras & Lingkungan</option><option value="Khusus">Kejadian Khusus</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Rincian / Bobot</label>
-                                <select id="kejadianSubKategori" required class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 font-bold appearance-none">
+                                <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Tingkat / Rincian Pelanggaran</label>
+                                <select id="kejadianSubKategori" required class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 font-bold">
                                     <option value="">-- Pilih Kategori Dahulu --</option>
                                 </select>
                             </div>
@@ -1314,13 +1423,13 @@
                             <div class="col-span-full mb-1"><p class="text-sm font-bold text-rose-800">Identitas Siswa Terkait:</p></div>
                             <div>
                                 <label class="block text-xs font-extrabold text-rose-600 uppercase tracking-wider mb-2">Kelas</label>
-                                <select id="kejadianKelas" onchange="loadStudentsForKejadian()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-white font-bold appearance-none border-rose-200">
+                                <select id="kejadianKelas" onchange="loadStudentsForKejadian()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-white font-bold border-rose-200">
                                     <option value="">-- Pilih Kelas --</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="block text-xs font-extrabold text-rose-600 uppercase tracking-wider mb-2">Nama Siswa</label>
-                                <select id="kejadianNama" class="input-modern w-full px-4 py-3.5 rounded-xl bg-white font-bold appearance-none border-rose-200">
+                                <select id="kejadianNama" class="input-modern w-full px-4 py-3.5 rounded-xl bg-white font-bold border-rose-200">
                                     <option value="">-- Pilih Kelas Dahulu --</option>
                                 </select>
                             </div>
@@ -1373,8 +1482,8 @@
                     </div>
                     
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 filter-section">
-                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Kelas</label><select id="filterHadirKelas" onchange="applyHadirFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"></select></div>
-                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Bulan</label><select id="filterHadirBulan" onchange="applyHadirFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"><option value="">Semua</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option></select></div>
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Kelas</label><select id="filterHadirKelas" onchange="applyHadirFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold cursor-pointer"></select></div>
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Bulan</label><select id="filterHadirBulan" onchange="applyHadirFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold cursor-pointer"><option value="">Semua</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option></select></div>
                         <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Dari</label><input type="date" id="filterHadirMulai" onchange="applyHadirFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold cursor-pointer"></div>
                         <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Sampai</label><input type="date" id="filterHadirAkhir" onchange="applyHadirFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold cursor-pointer"></div>
                     </div>
@@ -1397,22 +1506,78 @@
             </div>`;
         }
 
+        function getViewPelanggaranSiswa() {
+            return `
+            <div id="view-rekapPelanggaranSiswa" class="app-view hidden max-w-6xl mx-auto pb-20 md:pb-8">
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
+                    <div class="print-header"><h2 class="text-2xl font-bold">Jurnal Pelanggaran Siswa</h2></div>
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-slate-100 pb-6 gap-4">
+                        <div>
+                            <h2 class="text-2xl font-extrabold text-slate-800 flex items-center"><span class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center mr-3 text-lg">🚨</span> Pelanggaran Siswa</h2>
+                            <p class="text-xs text-slate-500 font-medium mt-1">Rekapitulasi khusus kedisiplinan siswa berdasarkan tingkat bobot pelanggaran.</p>
+                        </div>
+                        <div class="filter-section flex space-x-3 w-full md:w-auto">
+                            <button onclick="printView('Laporan Pelanggaran Siswa')" class="btn-modern flex-1 md:flex-none bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-xl font-bold transition-colors">Cetak PDF</button>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 filter-section">
+                        <div>
+                            <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Filter Kelas</label>
+                            <select id="filterPelanggaranKelas" onchange="applyPelanggaranSiswaFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold cursor-pointer">
+                                <option value="">Semua Kelas</option>
+                                ${FIXED_CLASSES.map(c => `<option value="${c}">${c}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Tingkat Pelanggaran</label>
+                            <select id="filterPelanggaranJenis" onchange="applyPelanggaranSiswaFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold cursor-pointer">
+                                <option value="">Semua Tingkat</option>
+                                <option value="Ringan">Pelanggaran Ringan</option>
+                                <option value="Sedang">Pelanggaran Sedang</option>
+                                <option value="Berat">Pelanggaran Berat</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Bulan</label>
+                            <select id="filterPelanggaranBulan" onchange="applyPelanggaranSiswaFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold cursor-pointer">
+                                <option value="">Semua Bulan</option>
+                                <option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Cari Nama / Sanksi</label>
+                            <input type="text" id="filterPelanggaranSearch" onkeyup="applyPelanggaranSiswaFilters()" placeholder="Ketik kata kunci..." class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 placeholder-slate-400">
+                        </div>
+                    </div>
+
+                    <div class="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-between">
+                        <span class="text-sm font-extrabold text-rose-800">Total Pelanggaran Siswa Ditemukan:</span>
+                        <span id="statTotalPelanggaranSiswa" class="text-2xl font-black text-rose-600">0</span>
+                    </div>
+                    
+                    <div id="pelanggaranSiswaDataContainer" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+                </div>
+            </div>`;
+        }
+
         function getViewRekapLanggar() {
             return `
             <div id="view-rekapLanggar" class="app-view hidden max-w-5xl mx-auto pb-20 md:pb-8">
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
-                    <div class="print-header"><h2 class="text-2xl font-bold">Jurnal Kejadian & Pelanggaran</h2></div>
+                    <div class="print-header"><h2 class="text-2xl font-bold">Jurnal Kejadian & Pelanggaran Sekolah</h2></div>
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-slate-100 pb-6 gap-4">
                         <div>
                             <h2 class="text-2xl font-extrabold text-slate-800 flex items-center"><span class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center mr-3 text-lg">📜</span> Jurnal Sekolah</h2>
+                            <p class="text-xs text-slate-500 font-medium mt-1">Jurnal umum seluruh kejadian sekolah (Guru, Sarpras, dan Kejadian Khusus).</p>
                         </div>
                         <div class="filter-section w-full md:w-auto"><button onclick="printView('Jurnal Kejadian')" class="btn-modern w-full md:w-auto bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-xl font-bold transition-colors">Cetak PDF</button></div>
                     </div>
                     
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 filter-section">
                         <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Cari Kata Kunci</label><input type="text" id="filterLanggarKelas" onkeyup="applyLanggarFilters()" placeholder="Ketik nama / kelas..." class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 placeholder-slate-400"></div>
-                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Kategori</label><select id="filterLanggarKategori" onchange="applyLanggarFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"><option value="">Semua Kategori</option><option value="Siswa">Siswa</option><option value="Guru">Guru</option><option value="Sarpras">Sarpras</option></select></div>
-                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Bulan</label><select id="filterLanggarBulan" onchange="applyLanggarFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"><option value="">Semua Bulan</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option></select></div>
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Kategori</label><select id="filterLanggarKategori" onchange="applyLanggarFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold cursor-pointer"><option value="">Semua Kategori</option><option value="Siswa">Siswa</option><option value="Guru">Guru</option><option value="Sarpras">Sarpras</option></select></div>
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Bulan</label><select id="filterLanggarBulan" onchange="applyLanggarFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold cursor-pointer"><option value="">Semua Bulan</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option></select></div>
                     </div>
                     
                     <div id="langgarDataContainer" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
@@ -1436,8 +1601,14 @@
                     </div>
                     
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8 filter-section">
-                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Pilih Semester</label><select id="filterTrenSemester" onchange="renderTrenSemester()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-indigo-50 font-black text-indigo-700 appearance-none cursor-pointer border-indigo-200 focus:border-indigo-500"><option value="GANJIL">Semester Ganjil (Juli - Des)</option><option value="GENAP">Semester Genap (Jan - Jun)</option></select></div>
-                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Filter Kelas</label><select id="filterTrenKelas" onchange="renderTrenSemester()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"></select></div>
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Pilih Semester</label><select id="filterTrenSemester" onchange="renderTrenSemester()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-indigo-50 font-black text-indigo-700 cursor-pointer border-indigo-200 focus:border-indigo-500"><option value="GANJIL">Semester Ganjil (Juli - Des)</option><option value="GENAP">Semester Genap (Jan - Jun)</option></select></div>
+                        <div>
+                            <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Filter Kelas</label>
+                            <select id="filterTrenKelas" onchange="renderTrenSemester()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 font-bold cursor-pointer">
+                                <option value="">Semua Kelas</option>
+                                ${FIXED_CLASSES.map(c => `<option value="${c}">${c}</option>`).join('')}
+                            </select>
+                        </div>
                     </div>
                     
                     <div class="table-container rounded-2xl border border-slate-200 shadow-sm">
@@ -1495,7 +1666,7 @@
                     
                     <h3 class="text-xl font-extrabold text-slate-800 mb-6">🔍 Rincian Kehadiran</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Filter Bulan</label><select id="siswaFilterBulan" onchange="renderStudentDetailTable()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"><option value="">Semua (Keseluruhan)</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option></select></div>
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Filter Bulan</label><select id="siswaFilterBulan" onchange="renderStudentDetailTable()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 font-bold cursor-pointer"><option value="">Semua (Keseluruhan)</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option></select></div>
                     </div>
                     
                     <div class="overflow-x-auto border border-slate-200 rounded-2xl shadow-sm">
