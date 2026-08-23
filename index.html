@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SIAGA-PIKET - Sistem Modern</title>
+    <title>SIAGA-PIKET - Sistem Informasi Aktivitas Guru Piket</title>
     
+    <!-- External Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -84,6 +85,23 @@
         </div>
     </div>
 
+    <!-- Modal Preview Dokumentasi Foto -->
+    <div id="docPreviewModal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-md z-[10001] flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl relative fade-in-up border border-slate-100">
+            <button onclick="closeDocPreviewModal()" class="absolute top-4 right-4 w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-600 font-bold text-xl transition-colors">✕</button>
+            <h3 id="modalTitle" class="text-lg font-extrabold text-slate-800 mb-4 pr-8">Preview Dokumentasi</h3>
+            <div class="w-full bg-slate-900 rounded-2xl overflow-hidden flex items-center justify-center min-h-[300px] max-h-[70vh]">
+                <img id="modalImagePreview" src="" alt="Bukti Foto" class="max-w-full max-h-[68vh] object-contain">
+            </div>
+            <div class="mt-4 flex justify-between items-center">
+                <a id="modalExternalLink" href="#" target="_blank" class="text-indigo-600 hover:text-indigo-800 font-bold text-xs flex items-center">
+                    <span>🔗 Buka di Tab Baru / Unduh</span>
+                </a>
+                <button onclick="closeDocPreviewModal()" class="btn-modern bg-slate-800 text-white font-bold px-6 py-2.5 rounded-xl text-sm">Tutup</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Login Page -->
     <div id="pageLogin" class="fixed inset-0 bg-slate-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
         <div class="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
@@ -102,10 +120,10 @@
             
             <div id="authSelection" class="space-y-4">
                 <button onclick="showAdminLogin()" class="btn-modern w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-4 px-4 rounded-2xl shadow-lg shadow-slate-200 transition-all flex items-center justify-center group">
-                    <span class="mr-3 text-xl group-hover:scale-110 transition-transform">👨‍🏫</span> Masuk sbg Guru Piket / Kepsek
+                    <span class="mr-3 text-xl group-hover:scale-110 transition-transform">👨‍🏫</span> Masuk Guru Piket / Kepsek
                 </button>
                 <button onclick="showStudentPortal()" class="btn-modern w-full bg-white border-2 border-slate-200 text-slate-700 hover:border-indigo-300 hover:bg-indigo-50 font-bold py-4 px-4 rounded-2xl transition-all flex items-center justify-center group">
-                    <span class="mr-3 text-xl group-hover:scale-110 transition-transform">👨‍🎓</span> Portal Siswa (Cek Kehadiran)
+                    <span class="mr-3 text-xl group-hover:scale-110 transition-transform">👨‍🎓</span> Portal Cek Siswa
                 </button>
             </div>
 
@@ -127,12 +145,11 @@
             <form id="studentPortalForm" onsubmit="handleStudentEntry(event)" class="hidden space-y-5">
                 <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-xl flex items-start space-x-3 mb-2">
                     <span class="text-indigo-500 text-lg mt-0.5">💡</span>
-                    <p class="text-sm text-indigo-800 font-medium leading-relaxed">Pilih kelas dan nama kamu untuk melihat persentase kehadiran dan riwayat kedisiplinan.</p>
+                    <p class="text-sm text-indigo-800 font-medium leading-relaxed">Pilih kelas dan nama kamu untuk melihat data kehadiran.</p>
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2">Pilih Kelas</label>
-                    <select id="publicKelas" onchange="loadPublicStudents()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 text-slate-800 appearance-none cursor-pointer" required>
-                    </select>
+                    <select id="publicKelas" onchange="loadPublicStudents()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 text-slate-800 appearance-none cursor-pointer" required></select>
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2">Nama Siswa</label>
@@ -204,23 +221,10 @@
     </main>
     </div>
 
-    <div id="docPreviewModal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-md z-[10001] flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl relative fade-in-up border border-slate-100">
-            <button onclick="closeDocPreviewModal()" class="absolute top-4 right-4 w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-600 font-bold text-xl transition-colors">✕</button>
-            <h3 id="modalTitle" class="text-lg font-extrabold text-slate-800 mb-4 pr-8">Preview Dokumentasi</h3>
-            <div class="w-full bg-slate-900 rounded-2xl overflow-hidden flex items-center justify-center min-h-[300px] max-h-[70vh]">
-                <img id="modalImagePreview" src="" alt="Bukti Foto" class="max-w-full max-h-[68vh] object-contain">
-            </div>
-            <div class="mt-4 flex justify-between items-center">
-                <a id="modalExternalLink" href="#" target="_blank" class="text-indigo-600 hover:text-indigo-800 font-bold text-xs flex items-center">
-                    <span>🔗 Buka di Tab Baru / Unduh</span>
-                </a>
-                <button onclick="closeDocPreviewModal()" class="btn-modern bg-slate-800 text-white font-bold px-6 py-2.5 rounded-xl text-sm">Tutup</button>
-            </div>
-        </div>
-    </div>
-
     <script>
+        // ==========================================
+        // KONFIGURASI API (GOOGLE APPS SCRIPT)
+        // ==========================================
         const API_URL = 'https://script.google.com/macros/s/AKfycbykcSEri3deYFk55atYMcUS46Ay1YUyNgcSCi_uQc38rzJLNlyOv6BZHmiNKEwCij8N/exec'; 
 
         let currentUser = null;
@@ -262,13 +266,16 @@
 
         async function apiCall(action, data = null) {
             if (API_URL === 'PASTE_LINK_API_ANDA_DISINI_NANTI' || API_URL === '') {
-                return new Promise(resolve => setTimeout(() => resolve(getMockData(action, data)), 600));
+                console.warn("API URL belum di set.");
+                return { success: false, message: "URL API Belum Diatur" };
             }
             
             try {
                 let url = API_URL + '?action=' + action;
                 let options = { method: 'GET' };
-                if (data) options = { method: 'POST', body: JSON.stringify(data), headers: { 'Content-Type': 'text/plain;charset=utf-8' } };
+                if (data) {
+                    options = { method: 'POST', body: JSON.stringify(data), headers: { 'Content-Type': 'text/plain;charset=utf-8' } };
+                }
                 const response = await fetch(url, options);
                 return await response.json();
             } catch (error) { 
@@ -276,47 +283,6 @@
                 Swal.fire('Koneksi Gagal', 'Tidak dapat terhubung ke server Google Script.', 'error');
                 if (action === 'getStudentsByClass') return [];
                 return { success: false, message: "Koneksi ke server gagal." }; 
-            }
-        }
-
-        function getMockData(action, data) {
-            const today = new Date().toISOString().split('T')[0];
-            switch(action) {
-                case 'processLogin':
-                    return { success: true, user: { username: data.username, role: 'KEPSEK', nama: 'Kepala Sekolah (Demo)', kelas: '' } };
-                case 'getStudentsByClass':
-                    return [
-                        {nama: 'Ahmad Jailani', kelas: data.kelas}, {nama: 'Budi Santoso', kelas: data.kelas},
-                        {nama: 'Citra Kirana', kelas: data.kelas}, {nama: 'Dewi Lestari', kelas: data.kelas}
-                    ];
-                case 'getDashboardData':
-                    return { success: true, stats: { hadir: 32, sakit: 2, izin: 1, alpa: 0, telat: 1, totalSiswa: 36, kelasDipantau: 5, kBerjalan: 4, kGuruKosong: 1, kTanpaTugas: 0, totalKejadian: 2, piketHadir: 3, piketAbsen: 0 } };
-                case 'saveAttendanceBatch':
-                case 'savePemantauan':
-                case 'saveKejadian':
-                case 'savePresensiPiket':
-                    return { success: true, message: 'Berhasil disimpan (Mode Demo)' };
-                case 'getLogbook':
-                    return { 
-                        success: true, 
-                        data: { 
-                            pemantauan: [{kelas: 'XA', jam: '1, 2', mapel: 'Informatika', guru: 'GUFRON FIRMANSYAH, S.Pd', status: 'Pembelajaran berlangsung dengan guru', tugas: '-', piket: 'Guru Piket (Demo)'}], 
-                            kejadian: [{kategori: 'Siswa', sub: 'Terlambat [Ringan]', deskripsi: 'Siswa: Ahmad Jailani (XA) - Datang telat 15 menit', tindakLanjut: 'Teguran lisan', piket: 'Guru Piket (Demo)', dokumentasi: ''}],
-                            guruPiket: [{nama: "SYA'ADAH, S.P.", status: 'HADIR', keterangan: '-'}]
-                        } 
-                    };
-                case 'getSuperData':
-                    return {
-                        success: true,
-                        data: {
-                            kehadiran: [{tanggal: today, nama: 'Ahmad Jailani', kelas: 'XA', status: 'H', keterangan: ''}],
-                            kejadian: [{tanggal: today, kategori: 'Siswa', sub: 'Terlambat [Ringan]', deskripsi: 'Siswa: Budi Santoso (XA) - Datang telat 15 menit', tindakLanjut: 'Teguran lisan', piket: 'Guru Piket (Demo)', dokumentasi: ''}],
-                            kehadiranPiket: [{tanggal: today, nama: "SYA'ADAH, S.P.", status: 'HADIR', keterangan: '-', penginput: 'Guru Piket'}],
-                            pemantauan: [{tanggal: today, hari: 'Senin', kelas: 'XA', jam: '1, 2', mapel: 'Informatika', guru: 'GUFRON FIRMANSYAH, S.Pd', status: 'Pembelajaran berlangsung dengan guru', adaTugas: '-', detailTugas: '-', catatan: '-', piket: 'Guru Piket'}]
-                        }
-                    };
-                default:
-                    return { success: false, message: 'Aksi tidak dikenali di Mode Demo' };
             }
         }
 
@@ -370,7 +336,7 @@
             sel.innerHTML = '<option value="">Sedang mencari nama...</option>';
             apiCall('getStudentsByClass', {kelas: k}).then(s => { 
                 sel.innerHTML = '<option value="">-- Pilih Nama Anda --</option>'; 
-                s.forEach(x => sel.add(new Option(x.nama, x.nama))); 
+                if(s && Array.isArray(s)) s.forEach(x => sel.add(new Option(x.nama, x.nama))); 
             });
         }
 
@@ -380,8 +346,8 @@
             apiCall('processLogin', {username: document.getElementById('username').value, password: document.getElementById('password').value})
                 .then(res => { 
                     hideLoading(); 
-                    if(res.success) { currentUser = res.user; initApp(); } 
-                    else Swal.fire({title: 'Gagal', text: res.message, icon: 'error', confirmButtonColor: '#4f46e5'}); 
+                    if(res && res.success) { currentUser = res.user; initApp(); } 
+                    else Swal.fire({title: 'Gagal', text: res ? res.message : 'Error', icon: 'error', confirmButtonColor: '#4f46e5'}); 
                 });
         }
 
@@ -431,7 +397,7 @@
             if(viewId === 'logbook') fetchLogbook();
             if(viewId === 'presensiPiket') renderPresensiPiketForm();
             
-            if(['rekapHadir', 'trenSemester', 'rekapLanggar', 'rekapPelanggaranSiswa', 'rekapPemantauan', 'ceklistPemantauan', 'rekapGuruPiket', 'dashboardSiswa'].includes(viewId)) {
+            if(['rekapHadir', 'trenSemester', 'rekapLanggar', 'rekapPelanggaranSiswa', 'rekapPemantauan', 'rekapGuruPiket', 'ceklistPemantauan', 'dashboardSiswa'].includes(viewId)) {
                 if(!isDataFetched) {
                     fetchSuperData(viewId);
                 } else {
@@ -448,7 +414,7 @@
             if (viewId === 'rekapLanggar') applyLanggarFilters();
             if (viewId === 'trenSemester') renderTrenSemester();
             if (viewId === 'dashboardSiswa') { renderStudentDashboard(); applyPelanggaranSiswaFilters(); }
-            if (viewId === 'rekapGuruPiket') renderRekapGuruPiket();
+            if (viewId === 'rekapGuruPiket') applyRekapGuruPiketFilters();
         }
 
         function initApp() {
@@ -464,13 +430,13 @@
             populateFormDropdowns();
             
             const today = new Date().toISOString().split('T')[0];
-            ['dashDate', 'inputHadirTanggal', 'pantauTanggal', 'kejadianTanggal', 'logbookDate', 'piketTanggal', 'ceklistTanggal'].forEach(id => {
+            ['dashDate', 'inputHadirTanggal', 'pantauTanggal', 'kejadianTanggal', 'logbookDate', 'ceklistTanggal'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) el.value = today;
             });
             
             if (currentUser.role === 'SISWA') { navigate('dashboardSiswa'); } 
-            else { navigate('dashboard'); updateHariPantau(); }
+            else { navigate('dashboard'); if(document.getElementById('pantauTanggal')) updateHariPantau(); }
         }
 
         function buildMenusAndViews() {
@@ -485,11 +451,11 @@
                     { id: 'rekapPelanggaranSiswa', label: 'Riwayat Kedisiplinan', icon: '🚨', type: 'menu' }
                 ];
                 viewContainer.insertAdjacentHTML('beforeend', getViewDashboardSiswa() + getViewPelanggaranSiswa());
-            } else if (currentUser.role === 'KEPSEK' || currentUser.role === 'ADMIN') {
+            } else if (currentUser.role === 'KEPSEK' || currentUser.role === 'PENGAWAS') {
                 menus = [
                     { label: 'Executive Monitor', type: 'header' },
                     { id: 'dashboard', label: 'Dashboard Utama', icon: '🏠', type: 'menu' },
-                    { id: 'rekapPemantauan', label: 'Pemantauan Kelas (Guru)', icon: '🏫', type: 'menu' },
+                    { id: 'rekapPemantauan', label: 'Laporan KBM Guru', icon: '🏫', type: 'menu' },
                     { id: 'rekapGuruPiket', label: 'Kehadiran Tim Piket', icon: '👨‍🏫', type: 'menu' },
                     { label: 'Laporan & Analitik', type: 'header' },
                     { id: 'rekapPelanggaranSiswa', label: 'Pelanggaran Siswa', icon: '🚨', type: 'menu' },
@@ -500,6 +466,7 @@
                 ];
                 viewContainer.insertAdjacentHTML('beforeend', getViewDashboardPiket() + getViewRekapPemantauan() + getViewRekapGuruPiket() + getViewPelanggaranSiswa() + getViewLogbook() + getViewRekapHadir() + getViewRekapLanggar() + getViewTrenSemester());
             } else {
+                // ADMIN & GURU PIKET
                 menus = [
                     { label: 'Operasional', type: 'header' },
                     { id: 'dashboard', label: 'Dashboard Piket', icon: '🏠', type: 'menu' },
@@ -509,12 +476,16 @@
                     { id: 'pemantauan', label: 'Pantau Pembelajaran', icon: '🏫', type: 'menu' },
                     { id: 'kejadian', label: 'Lapor Kejadian', icon: '⚠️', type: 'menu' },
                     { label: 'Laporan Piket', type: 'header' },
-                    { id: 'ceklistPemantauan', label: 'Ceklist KBM (Hari Ini)', icon: '✅', type: 'menu' },
+                    { id: 'ceklistPemantauan', label: 'Ceklist KBM (Hari Ini)', icon: '🏫', type: 'menu' },
                     { id: 'logbook', label: 'Logbook Harian', icon: '📔', type: 'menu' },
                     { id: 'rekapPelanggaranSiswa', label: 'Pelanggaran Siswa', icon: '🚨', type: 'menu' },
-                    { id: 'rekapHadir', label: 'Rekap Kehadiran', icon: '📊', type: 'menu' }
+                    { id: 'rekapHadir', label: 'Rekap Kehadiran', icon: '📊', type: 'menu' },
+                    { id: 'rekapPemantauan', label: 'Rekap KBM (Total)', icon: '📋', type: 'menu' },
+                    { id: 'rekapGuruPiket', label: 'Kehadiran Tim Piket', icon: '👨‍🏫', type: 'menu' },
+                    { id: 'rekapLanggar', label: 'Jurnal Sekolah', icon: '📜', type: 'menu' },
+                    { id: 'trenSemester', label: 'Tren Semester', icon: '📈', type: 'menu' }
                 ];
-                viewContainer.insertAdjacentHTML('beforeend', getViewDashboardPiket() + getViewPresensiPiket() + getViewInputHadir() + getViewPemantauan() + getViewKejadian() + getViewCeklistPemantauan() + getViewLogbook() + getViewPelanggaranSiswa() + getViewRekapHadir());
+                viewContainer.insertAdjacentHTML('beforeend', getViewDashboardPiket() + getViewPresensiPiket() + getViewInputHadir() + getViewPemantauan() + getViewKejadian() + getViewCeklistPemantauan() + getViewRekapPemantauan() + getViewLogbook() + getViewPelanggaranSiswa() + getViewRekapHadir() + getViewRekapGuruPiket() + getViewRekapLanggar() + getViewTrenSemester());
             }
 
             menus.forEach(m => {
@@ -530,23 +501,12 @@
         }
 
         function populateFormDropdowns() {
-            const inputDropdowns = ['publicKelas', 'inputHadirKelas', 'pantauKelas', 'kejadianKelas'];
-            const filterDropdowns = ['filterHadirKelas', 'filterPelanggaranKelas', 'filterTrenKelas', 'filterPemantauanKelas'];
-            
-            // Mengisi dropdown untuk Input (Opsi pertama: Pilih Kelas)
-            inputDropdowns.forEach(id => {
+            const classDropdowns = ['publicKelas', 'inputHadirKelas', 'pantauKelas', 'kejadianKelas', 'filterHadirKelas', 'filterLanggarKelas', 'filterPelanggaranKelas', 'filterPemantauanKelas', 'filterTrenKelas'];
+            classDropdowns.forEach(id => {
                 const el = document.getElementById(id);
-                if(el) { 
-                    el.innerHTML = `<option value="">-- Pilih Kelas --</option>`; 
-                    FIXED_CLASSES.forEach(x => el.add(new Option(x, x))); 
-                }
-            });
-
-            // Mengisi dropdown untuk Filter Rekap (Opsi pertama: Semua Kelas)
-            filterDropdowns.forEach(id => {
-                const el = document.getElementById(id);
-                if(el) { 
-                    el.innerHTML = `<option value="">Semua Kelas</option>`; 
+                if(el && el.tagName === 'SELECT') { 
+                    const firstOption = el.id.includes('filter') ? 'Semua Kelas' : '-- Pilih Kelas --';
+                    el.innerHTML = `<option value="">${firstOption}</option>`; 
                     FIXED_CLASSES.forEach(x => el.add(new Option(x, x))); 
                 }
             });
@@ -561,7 +521,7 @@
                     isDataFetched = true;
                     triggerViewRender(targetViewId);
                 } else {
-                    Swal.fire('Error', res.message, 'error');
+                    Swal.fire('Error', res ? res.message : 'Gagal memuat', 'error');
                 }
             }).catch(err => {
                 hideLoading();
@@ -569,12 +529,14 @@
         }
 
         function loadDashboardPiket() {
-            const tgl = document.getElementById('dashDate').value;
+            const elDate = document.getElementById('dashDate');
+            if(!elDate) return;
+            const tgl = elDate.value;
             const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
             document.getElementById('dashDateDisplay').innerText = new Date(tgl).toLocaleDateString('id-ID', opts);
             
             apiCall('getDashboardData', {tanggal: tgl}).then(res => {
-                if(res.success) {
+                if(res && res.success) {
                     const s = res.stats;
                     document.getElementById('kpi-hadir').innerText = s.totalSiswa > 0 ? (((s.hadir + s.telat) / s.totalSiswa) * 100).toFixed(1) + '%' : '0%';
                     document.getElementById('kpi-total-siswa').innerText = s.totalSiswa;
@@ -588,16 +550,12 @@
         }
 
         function renderPresensiPiketForm() {
-            const tglEl = document.getElementById('piketTanggal');
-            if (!tglEl) return;
-            const tglVal = tglEl.value || new Date().toISOString().split('T')[0];
-            tglEl.value = tglVal;
-
-            const dateObj = new Date(tglVal);
+            const todayVal = new Date().toISOString().split('T')[0];
+            const dateObj = new Date(todayVal);
             const namaHari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'][dateObj.getDay()];
             
             const hariInfoEl = document.getElementById('piketHariDisplay');
-            if (hariInfoEl) hariInfoEl.innerText = `Jadwal Piket Hari: ${namaHari}`;
+            if (hariInfoEl) hariInfoEl.innerText = `Jadwal Piket Hari: ${namaHari} (Terkunci)`;
 
             const listGuru = JADWAL_PIKET[namaHari] || [];
             const container = document.getElementById('piketListContainer');
@@ -637,7 +595,7 @@
 
         function submitPresensiPiket(e) {
             e.preventDefault();
-            const tgl = document.getElementById('piketTanggal').value;
+            const tgl = new Date().toISOString().split('T')[0];
             const dateObj = new Date(tgl);
             const namaHari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'][dateObj.getDay()];
             const listGuru = JADWAL_PIKET[namaHari] || [];
@@ -710,11 +668,10 @@
         }
 
         function updateHariPantau() {
-            const dateInput = document.getElementById('pantauTanggal');
-            if (!dateInput) return; // Prevent error if element doesn't exist for this role
-            const d = new Date(dateInput.value);
-            const hariInput = document.getElementById('pantauHari');
-            if (hariInput) hariInput.value = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'][d.getDay()];
+            const el = document.getElementById('pantauTanggal');
+            if(!el) return;
+            const d = new Date(el.value);
+            document.getElementById('pantauHari').value = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'][d.getDay()];
         }
 
         function loadMapelByKelas() {
@@ -747,18 +704,6 @@
             }
         }
 
-        function toggleDetailKondisi(statusVal) { 
-            const detailContainer = document.getElementById('detailTugasContainer');
-            if (!detailContainer) return;
-            
-            if (statusVal === 'Tidak ada guru, ada tugas') {
-                detailContainer.classList.remove('hidden');
-            } else {
-                detailContainer.classList.add('hidden');
-                document.querySelectorAll('.pantauBentukTugas').forEach(c => c.checked = false);
-            }
-        }
-
         function submitPemantauan(e) {
             e.preventDefault();
             
@@ -766,18 +711,18 @@
             if(checkedJam.length === 0) return Swal.fire({title:'Ops!', text:'Pilih minimal 1 jam pelajaran (ceklis kotak)', icon:'warning', confirmButtonColor: '#4f46e5'});
             const jamString = checkedJam.join(', ');
 
-            const statEl = document.querySelector('input[name="pantauStatus"]:checked');
-            if(!statEl) return Swal.fire({title:'Ops!', text:'Pilih kondisi pembelajaran saat ini', icon:'warning', confirmButtonColor: '#4f46e5'});
-            const stat = statEl.value;
-
+            const stat = document.querySelector('input[name="pantauStatus"]:checked').value;
+            let finalStatus = "";
             let adaT = "-", detailT = "-";
-            
-            if(stat === "Tidak ada guru, ada tugas") {
+
+            if (stat === "Ada Guru") {
+                finalStatus = "Pembelajaran berlangsung dengan guru";
+                adaT = "Tidak Ada Tugas";
+            } else if (stat === "Tidak ada guru, ada tugas") {
+                finalStatus = "Guru tidak hadir";
                 adaT = "Ada Tugas";
-                const sel = Array.from(document.querySelectorAll('.pantauBentukTugas:checked')).map(c=>c.value);
-                if(sel.length === 0) return Swal.fire({title:'Ops!', text:'Pilih minimal 1 bentuk tugas', icon:'warning', confirmButtonColor: '#4f46e5'});
-                detailT = sel.join(', ');
             } else if (stat === "Tidak ada guru, tidak ada tugas") {
+                finalStatus = "Guru tidak hadir";
                 adaT = "Tidak ada tugas";
             }
             
@@ -786,16 +731,15 @@
                 tanggal: document.getElementById('pantauTanggal').value, hari: document.getElementById('pantauHari').value,
                 kelas: document.getElementById('pantauKelas').value, jam: jamString,
                 mapel: document.getElementById('pantauMapel').value, guru: document.getElementById('pantauGuru').value,
-                status: stat, adaTugas: adaT, detailTugas: detailT, catatan: document.getElementById('pantauCatatan').value,
+                status: finalStatus, adaTugas: adaT, detailTugas: detailT, catatan: document.getElementById('pantauCatatan').value,
                 penginput: currentUser.nama
             }).then(r => { 
                 hideLoading(); 
-                if(r.success) { 
+                if(r && r.success) { 
                     showToast('success','Tersimpan'); 
                     document.getElementById('formPemantauan').reset(); 
                     updateHariPantau(); 
                     document.getElementById('pantauGuru').value='-'; 
-                    toggleDetailKondisi('');
                     isDataFetched = false;
                 } 
             });
@@ -838,7 +782,7 @@
             sel.innerHTML = '<option value="">Sedang mencari nama...</option>';
             apiCall('getStudentsByClass', {kelas: k}).then(s => { 
                 sel.innerHTML = '<option value="">-- Pilih Nama Siswa --</option>'; 
-                s.forEach(x => sel.add(new Option(x.nama, x.nama))); 
+                if(s && Array.isArray(s)) s.forEach(x => sel.add(new Option(x.nama, x.nama))); 
             });
         }
 
@@ -891,15 +835,57 @@
         function sendKejadianApi(payload) {
             apiCall('saveKejadian', payload).then(r => { 
                 hideLoading(); 
-                if(r.success) { 
+                if(r && r.success) { 
                     showToast('success','Laporan Terkirim'); 
                     document.getElementById('formKejadian').reset(); 
                     document.getElementById('kejadianSiswaContainer').classList.add('hidden');
                     isDataFetched = false;
                 } else {
-                    Swal.fire('Error', r.message, 'error');
+                    Swal.fire('Error', r ? r.message : 'Gagal Menyimpan', 'error');
                 }
             });
+        }
+
+        function renderCeklistPemantauan() {
+            if(!globalData.pemantauan) return;
+            const container = document.getElementById('ceklistMatrixContainer');
+            if(!container) return;
+
+            const tgl = document.getElementById('ceklistTanggal').value;
+            const dataHariIni = globalData.pemantauan.filter(d => d.tanggal === tgl);
+
+            let tableHTML = `<table class="w-full text-center whitespace-nowrap border-collapse">
+                <thead><tr class="bg-indigo-50 text-indigo-800 text-xs font-extrabold uppercase tracking-wider">
+                    <th class="p-3 border border-indigo-100 sticky-col bg-indigo-50 z-20">Jam Ke-</th>`;
+            
+            FIXED_CLASSES.forEach(c => {
+                tableHTML += `<th class="p-3 border border-indigo-100">${c}</th>`;
+            });
+            tableHTML += `</tr></thead><tbody class="text-sm font-bold text-slate-600">`;
+
+            for (let jam = 1; jam <= 12; jam++) {
+                tableHTML += `<tr class="hover:bg-slate-50 transition-colors"><td class="p-3 border border-slate-200 sticky-col bg-white text-indigo-700">Jam ${jam}</td>`;
+                FIXED_CLASSES.forEach(kelas => {
+                    const match = dataHariIni.find(d => d.kelas === kelas && d.jam.toString().includes(jam.toString()));
+                    let content = '<span class="text-slate-300 font-medium">-</span>';
+                    
+                    if (match) {
+                        if (match.status === 'Pembelajaran berlangsung dengan guru') {
+                            content = '<div class="mx-auto w-10 py-1 bg-green-500 text-white rounded text-xs">H</div>';
+                        } else {
+                            if (match.adaTugas && match.adaTugas.toLowerCase().includes('tidak')) {
+                                content = '<div class="mx-auto w-10 py-1 bg-red-500 text-white rounded text-xs">TH</div>';
+                            } else {
+                                content = '<div class="mx-auto w-10 py-1 bg-yellow-500 text-white rounded text-xs">TGS</div>';
+                            }
+                        }
+                    }
+                    tableHTML += `<td class="p-2 border border-slate-200">${content}</td>`;
+                });
+                tableHTML += `</tr>`;
+            }
+            tableHTML += `</tbody></table>`;
+            container.innerHTML = tableHTML;
         }
 
         function fetchLogbook() {
@@ -907,7 +893,7 @@
             const content = document.getElementById('logbookContent');
             content.innerHTML = '<div class="text-center py-12 text-slate-400 font-medium">Sedang menyusun logbook...</div>';
             apiCall('getLogbook', {tanggal: tgl}).then(r => {
-                if(r.success) {
+                if(r && r.success) {
                     const p = r.data.pemantauan, k = r.data.kejadian, g = r.data.guruPiket || [];
                     const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
                     content.innerHTML = `
@@ -920,23 +906,26 @@
                             ${g.length===0 ? '<p class="text-sm italic text-slate-500 pl-2">Belum ada presensi piket yang dicatat untuk hari ini.</p>' : `
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                                     ${g.map(x=>`
-                                        <div class="p-3 border border-slate-200 rounded-xl bg-slate-50 flex items-center justify-between">
-                                            <span class="font-bold text-slate-800 text-xs">${x.nama}</span>
-                                            <span class="px-2 py-0.5 rounded text-[10px] font-extrabold ${x.status==='HADIR'?'bg-green-100 text-green-800':'bg-red-100 text-red-800'}">${x.status}</span>
+                                        <div class="p-3 border border-slate-200 rounded-xl bg-slate-50 flex flex-col justify-center">
+                                            <div class="flex justify-between items-center mb-1">
+                                                <span class="font-bold text-slate-800 text-xs">${x.nama}</span>
+                                                <span class="px-2 py-0.5 rounded text-[10px] font-extrabold ${x.status==='HADIR'?'bg-green-100 text-green-800':'bg-red-100 text-red-800'}">${x.status}</span>
+                                            </div>
+                                            <span class="text-[10px] text-slate-500 font-medium">Ket: ${x.keterangan}</span>
                                         </div>
                                     `).join('')}
                                 </div>
                             `}
                         </div>
                         <div class="mb-8"><h3 class="font-extrabold text-slate-800 mb-4 bg-slate-100 p-3 rounded-xl border border-slate-200">🏫 PEMANTAUAN PEMBELAJARAN</h3>
-                            ${p.length===0 ? '<p class="text-sm italic text-slate-500 pl-2">Tidak ada catatan pemantauan hari ini.</p>' : `<div class="overflow-x-auto rounded-xl border border-slate-200"><table class="w-full text-sm border-collapse"><tr class="bg-slate-50 text-left"><th class="p-3 border-b">Kelas</th><th class="p-3 border-b">Jam</th><th class="p-3 border-b">Mapel</th><th class="p-3 border-b">Guru</th><th class="p-3 border-b">Status</th><th class="p-3 border-b">Tugas</th></tr>${p.map(x=>`<tr class="hover:bg-slate-50"><td class="p-3 border-b font-medium">${x.kelas}</td><td class="p-3 border-b">${x.jam}</td><td class="p-3 border-b">${x.mapel}</td><td class="p-3 border-b">${x.guru}</td><td class="p-3 border-b font-semibold ${x.status==='Pembelajaran berlangsung dengan guru'?'text-green-600':'text-red-600'}">${x.status}</td><td class="p-3 border-b">${x.tugas}</td></tr>`).join('')}</table></div>`}
+                            ${p.length===0 ? '<p class="text-sm italic text-slate-500 pl-2">Tidak ada catatan pemantauan hari ini.</p>' : `<div class="overflow-x-auto rounded-xl border border-slate-200"><table class="w-full text-sm border-collapse"><tr class="bg-slate-50 text-left"><th class="p-3 border-b">Kelas</th><th class="p-3 border-b">Jam</th><th class="p-3 border-b">Mapel</th><th class="p-3 border-b">Guru</th><th class="p-3 border-b">Status</th><th class="p-3 border-b">Tugas</th><th class="p-3 border-b">Penginput</th></tr>${p.map(x=>`<tr class="hover:bg-slate-50"><td class="p-3 border-b font-medium">${x.kelas}</td><td class="p-3 border-b">${x.jam}</td><td class="p-3 border-b">${x.mapel}</td><td class="p-3 border-b">${x.guru}</td><td class="p-3 border-b font-semibold ${x.status==='Pembelajaran berlangsung dengan guru'?'text-green-600':'text-red-600'}">${x.status}</td><td class="p-3 border-b">${x.tugas}</td><td class="p-3 border-b text-xs font-bold text-slate-500">${x.piket}</td></tr>`).join('')}</table></div>`}
                         </div>
                         <div class="mb-8"><h3 class="font-extrabold text-slate-800 mb-4 bg-slate-100 p-3 rounded-xl border border-slate-200">⚠️ LAPORAN KEJADIAN</h3>
-                            ${k.length===0 ? '<p class="text-sm italic text-slate-500 pl-2">Tidak ada laporan kejadian hari ini.</p>' : `<ul class="space-y-4">${k.map(x=>`<li class="border border-slate-200 rounded-xl p-4 bg-white shadow-sm"><div class="flex items-center gap-2 mb-2"><span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs font-bold rounded">${x.kategori}</span><span class="font-bold text-slate-800">${x.sub}</span> ${x.dokumentasi ? `<button onclick="openDocPreviewModal('${x.dokumentasi}', '${x.sub}')" class="text-xs text-blue-600 underline font-bold">Preview Foto</button>` : ''}</div><div class="text-sm text-slate-600 mb-2">${x.deskripsi}</div><div class="text-xs bg-slate-50 p-2 rounded border border-slate-100"><span class="font-bold text-slate-700">Tindak Lanjut:</span> ${x.tindakLanjut}</div></li>`).join('')}</ul>`}
+                            ${k.length===0 ? '<p class="text-sm italic text-slate-500 pl-2">Tidak ada laporan kejadian hari ini.</p>' : `<ul class="space-y-4">${k.map(x=>`<li class="border border-slate-200 rounded-xl p-4 bg-white shadow-sm"><div class="flex items-center gap-2 mb-2"><span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs font-bold rounded">${x.kategori}</span><span class="font-bold text-slate-800">${x.sub}</span> ${x.dokumentasi ? `<button onclick="openDocPreviewModal('${x.dokumentasi}', '${x.sub}')" class="text-xs text-blue-600 underline font-bold">Preview Foto</button>` : ''}</div><div class="text-sm text-slate-600 mb-2">${x.deskripsi}</div><div class="text-xs bg-slate-50 p-2 rounded border border-slate-100 mb-2"><span class="font-bold text-slate-700">Tindak Lanjut:</span> ${x.tindakLanjut}</div><p class="text-xs text-slate-400 font-medium">Dilaporkan oleh: <span class="font-bold text-slate-600">${x.piket}</span></p></li>`).join('')}</ul>`}
                         </div>
                         <div class="mt-20 flex justify-between px-10 text-sm text-center">
                             <div><p class="mb-20 font-medium text-slate-600">Mengetahui,<br><span class="font-bold text-slate-800">Kepala Sekolah</span></p><p class="font-extrabold border-b-2 border-slate-800 inline-block w-48"></p></div>
-                            <div><p class="mb-20 font-medium text-slate-600">Mantangai, ${new Date().toLocaleDateString('id-ID')}<br><span class="font-bold text-slate-800">Guru Piket</span></p><p class="font-extrabold border-b-2 border-slate-800 inline-block w-48 text-indigo-600">${currentUser.nama}</p></div>
+                            <div><p class="mb-20 font-medium text-slate-600">Mantangai, ${new Date().toLocaleDateString('id-ID')}<br><span class="font-bold text-slate-800">Petugas Logbook</span></p><p class="font-extrabold border-b-2 border-slate-800 inline-block w-48 text-indigo-600">${currentUser.nama}</p></div>
                         </div>
                     `;
                 }
@@ -948,48 +937,43 @@
             const fKelas = document.getElementById('filterPemantauanKelas').value;
             const fStatus = document.getElementById('filterPemantauanStatus').value;
             const fBulan = document.getElementById('filterPemantauanBulan').value;
+            const fMulai = document.getElementById('filterPemantauanMulai') ? document.getElementById('filterPemantauanMulai').value : '';
+            const fAkhir = document.getElementById('filterPemantauanAkhir') ? document.getElementById('filterPemantauanAkhir').value : '';
             const fSearch = document.getElementById('filterPemantauanSearch').value.toLowerCase();
 
             pemantauanFilteredData = globalData.pemantauan;
             if (fKelas) pemantauanFilteredData = pemantauanFilteredData.filter(d => d.kelas === fKelas);
+            if (fStatus) pemantauanFilteredData = pemantauanFilteredData.filter(d => d.status === fStatus);
             if (fBulan) pemantauanFilteredData = pemantauanFilteredData.filter(d => d.tanggal && d.tanggal.split('-')[1] === fBulan);
+            if (fMulai) pemantauanFilteredData = pemantauanFilteredData.filter(d => d.tanggal && new Date(d.tanggal) >= new Date(fMulai));
+            if (fAkhir) pemantauanFilteredData = pemantauanFilteredData.filter(d => d.tanggal && new Date(d.tanggal) <= new Date(fAkhir));
             if (fSearch) pemantauanFilteredData = pemantauanFilteredData.filter(d => (d.guru && d.guru.toLowerCase().includes(fSearch)) || (d.mapel && d.mapel.toLowerCase().includes(fSearch)));
-
-            if (fStatus === 'H') pemantauanFilteredData = pemantauanFilteredData.filter(d => d.status === 'Ada Guru' || d.status === 'Pembelajaran berlangsung dengan guru');
-            else if (fStatus === 'TGS') pemantauanFilteredData = pemantauanFilteredData.filter(d => d.status === 'Tidak ada guru, ada tugas' || (d.status !== 'Ada Guru' && d.status !== 'Pembelajaran berlangsung dengan guru' && d.adaTugas !== 'Tidak ada tugas' && d.adaTugas !== '-'));
-            else if (fStatus === 'TH') pemantauanFilteredData = pemantauanFilteredData.filter(d => d.status === 'Tidak ada guru, tidak ada tugas' || ((d.status === 'Guru tidak hadir' || d.status === 'Guru belum / tidak berada di kelas') && (d.adaTugas === 'Tidak ada tugas' || d.adaTugas === '-')));
 
             let totalPantau = pemantauanFilteredData.length;
             let normalCount = 0, belumCount = 0, kosongCount = 0;
 
             pemantauanFilteredData.forEach(d => {
-                let stat = d.status;
-                let tugas = d.adaTugas;
-                if (stat === 'Ada Guru' || stat === 'Pembelajaran berlangsung dengan guru') normalCount++;
-                else if (stat === 'Tidak ada guru, ada tugas' || (stat !== 'Ada Guru' && stat !== 'Pembelajaran berlangsung dengan guru' && (tugas === 'Ada Tugas' || (tugas && tugas !== 'Tidak Ada Tugas' && tugas !== 'Tidak ada tugas' && tugas !== '-')))) belumCount++;
-                else kosongCount++;
+                if (d.status === 'Pembelajaran berlangsung dengan guru') normalCount++;
+                else if (d.status === 'Guru belum / tidak berada di kelas') belumCount++;
+                else if (d.status === 'Guru tidak hadir') kosongCount++;
             });
 
-            document.getElementById('kpiPantauTotal').innerText = totalPantau;
-            document.getElementById('kpiPantauNormal').innerText = normalCount;
-            document.getElementById('kpiPantauBelum').innerText = belumCount;
-            document.getElementById('kpiPantauKosong').innerText = kosongCount;
+            if(document.getElementById('kpiPantauTotal')) document.getElementById('kpiPantauTotal').innerText = totalPantau;
+            if(document.getElementById('kpiPantauNormal')) document.getElementById('kpiPantauNormal').innerText = normalCount;
+            if(document.getElementById('kpiPantauBelum')) document.getElementById('kpiPantauBelum').innerText = belumCount;
+            if(document.getElementById('kpiPantauKosong')) document.getElementById('kpiPantauKosong').innerText = kosongCount;
 
             const tbody = document.getElementById('tablePemantauanBody');
-            tbody.innerHTML = pemantauanFilteredData.length === 0 ? `<tr><td colspan="7" class="p-8 text-center text-slate-500 font-medium bg-slate-50">Tidak ada riwayat pemantauan sesuai filter.</td></tr>`
+            if(!tbody) return;
+            tbody.innerHTML = pemantauanFilteredData.length === 0 ? `<tr><td colspan="8" class="p-8 text-center text-slate-500 font-medium bg-slate-50">Tidak ada riwayat pemantauan sesuai filter.</td></tr>`
                 : pemantauanFilteredData.map((row, idx) => {
-                    let stat = row.status;
-                    let tugas = row.adaTugas;
-                    let badgeStat = '';
-                    
-                    if (stat === 'Ada Guru' || stat === 'Pembelajaran berlangsung dengan guru') {
-                        badgeStat = '<span class="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-lg font-bold text-xs">🟢 Ada Guru</span>';
-                    } else if (stat === 'Tidak ada guru, ada tugas' || (stat !== 'Ada Guru' && stat !== 'Pembelajaran berlangsung dengan guru' && (tugas === 'Ada Tugas' || (tugas && tugas !== 'Tidak Ada Tugas' && tugas !== 'Tidak ada tugas' && tugas !== '-')))) {
-                        badgeStat = '<span class="px-3 py-1 bg-amber-100 text-amber-800 rounded-lg font-bold text-xs">🟡 TGS</span>';
-                    } else {
-                        badgeStat = '<span class="px-3 py-1 bg-rose-100 text-rose-800 rounded-lg font-bold text-xs">🔴 TH</span>';
-                    }
-
+                    let badgeStat = row.status === 'Pembelajaran berlangsung dengan guru' 
+                        ? '<span class="px-3 py-1 bg-green-100 text-green-800 rounded-lg font-bold text-xs">🟢 H (Ada Guru)</span>'
+                        : (row.status === 'Guru belum / tidak berada di kelas' 
+                            ? '<span class="px-3 py-1 bg-amber-100 text-amber-800 rounded-lg font-bold text-xs">🟡 Belum Masuk</span>'
+                            : (row.adaTugas === 'Ada Tugas' 
+                                ? '<span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-lg font-bold text-xs">🟡 TGS (Ada Tugas)</span>' 
+                                : '<span class="px-3 py-1 bg-red-100 text-red-800 rounded-lg font-bold text-xs">🔴 TH (Kosong)</span>'));
                     return `
                         <tr class="hover:bg-slate-50 border-b border-slate-100 transition-colors">
                             <td class="p-3 text-center text-slate-400 font-medium">${idx + 1}</td>
@@ -998,65 +982,10 @@
                             <td class="p-3 font-bold text-slate-800">${row.mapel}</td>
                             <td class="p-3 font-medium text-slate-700">${row.guru}</td>
                             <td class="p-3">${badgeStat}</td>
-                            <td class="p-3 text-xs text-slate-500 font-medium">${row.adaTugas} ${row.detailTugas !== '-' ? '('+row.detailTugas+')' : ''}</td>
+                            <td class="p-3 text-xs text-slate-500 font-medium">${row.adaTugas}</td>
+                            <td class="p-3 text-xs font-bold text-slate-400">${row.piket}</td>
                         </tr>`;
                 }).join('');
-        }
-
-        function renderCeklistPemantauan() {
-            if (!globalData || !globalData.pemantauan) return;
-            const dateInput = document.getElementById('ceklistTanggal');
-            const selectedDate = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
-            
-            const filteredData = globalData.pemantauan.filter(d => d.tanggal === selectedDate);
-            
-            let matrix = {};
-            for(let i=1; i<=12; i++) {
-                matrix[i] = {};
-                FIXED_CLASSES.forEach(c => matrix[i][c] = null);
-            }
-            
-            filteredData.forEach(row => {
-                const jams = (row.jam || '').toString().split(',').map(j => parseInt(j.trim(), 10));
-                const kelas = row.kelas;
-                jams.forEach(j => {
-                    if(matrix[j] && matrix[j][kelas] !== undefined) {
-                        matrix[j][kelas] = row;
-                    }
-                });
-            });
-            
-            const tbody = document.getElementById('ceklistPemantauanBody');
-            if(!tbody) return;
-            
-            let html = '';
-            for(let i=1; i<=12; i++) {
-                html += `<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-3 text-center font-bold text-slate-700 bg-white sticky-col border-r border-slate-100">Jam ${i}</td>`;
-                FIXED_CLASSES.forEach(c => {
-                    const rowData = matrix[i][c];
-                    let content = '<span class="text-slate-300 font-bold">-</span>';
-                    let bgClass = '';
-
-                    if (rowData) {
-                        let stat = rowData.status;
-                        let tugas = rowData.adaTugas;
-
-                        if (stat === 'Ada Guru' || stat === 'Pembelajaran berlangsung dengan guru') {
-                            content = '<span class="font-black text-emerald-700">H</span>';
-                            bgClass = 'bg-emerald-100 border-emerald-200';
-                        } else if (stat === 'Tidak ada guru, ada tugas' || (stat !== 'Pembelajaran berlangsung dengan guru' && stat !== 'Ada Guru' && (tugas === 'Ada Tugas' || (tugas && tugas !== 'Tidak Ada Tugas' && tugas !== 'Tidak ada tugas' && tugas !== '-')))) {
-                            content = '<span class="font-black text-amber-700">TGS</span>';
-                            bgClass = 'bg-amber-100 border-amber-200';
-                        } else {
-                            content = '<span class="font-black text-rose-700">TH</span>';
-                            bgClass = 'bg-rose-100 border-rose-200';
-                        }
-                    }
-                    html += `<td class="p-3 text-center ${bgClass} border-r border-slate-100">${content}</td>`;
-                });
-                html += '</tr>';
-            }
-            tbody.innerHTML = html;
         }
 
         function applyPelanggaranSiswaFilters() {
@@ -1069,20 +998,20 @@
             pelanggaranSiswaFilteredData = globalData.kejadian.filter(d => d.kategori === 'Siswa');
 
             if (currentUser.role === 'SISWA') {
-                pelanggaranSiswaFilteredData = pelanggaranSiswaFilteredData.filter(d => d.deskripsi.includes(currentUser.nama));
+                pelanggaranSiswaFilteredData = pelanggaranSiswaFilteredData.filter(d => d.deskripsi && d.deskripsi.includes(currentUser.nama));
             } else {
-                if (fKelas) pelanggaranSiswaFilteredData = pelanggaranSiswaFilteredData.filter(d => d.deskripsi.includes(`(${fKelas})`));
+                if (fKelas) pelanggaranSiswaFilteredData = pelanggaranSiswaFilteredData.filter(d => d.deskripsi && d.deskripsi.includes(`(${fKelas})`));
             }
 
-            if (fTingkat) pelanggaranSiswaFilteredData = pelanggaranSiswaFilteredData.filter(d => d.sub.includes(`[${fTingkat}]`));
+            if (fTingkat) pelanggaranSiswaFilteredData = pelanggaranSiswaFilteredData.filter(d => d.sub && d.sub.includes(`[${fTingkat}]`));
             if (fBulan) pelanggaranSiswaFilteredData = pelanggaranSiswaFilteredData.filter(d => d.tanggal && d.tanggal.split('-')[1] === fBulan);
-            if (fSearch) pelanggaranSiswaFilteredData = pelanggaranSiswaFilteredData.filter(d => d.deskripsi.toLowerCase().includes(fSearch) || d.sub.toLowerCase().includes(fSearch));
+            if (fSearch) pelanggaranSiswaFilteredData = pelanggaranSiswaFilteredData.filter(d => (d.deskripsi && d.deskripsi.toLowerCase().includes(fSearch)) || (d.sub && d.sub.toLowerCase().includes(fSearch)));
 
             let ringanCount = 0, sedangCount = 0, beratCount = 0;
             pelanggaranSiswaFilteredData.forEach(d => {
-                if (d.sub.includes('[Ringan]')) ringanCount++;
-                if (d.sub.includes('[Sedang]')) sedangCount++;
-                if (d.sub.includes('[Berat]')) beratCount++;
+                if (d.sub && d.sub.includes('[Ringan]')) ringanCount++;
+                if (d.sub && d.sub.includes('[Sedang]')) sedangCount++;
+                if (d.sub && d.sub.includes('[Berat]')) beratCount++;
             });
 
             if(document.getElementById('kpiRingan')) document.getElementById('kpiRingan').innerText = ringanCount;
@@ -1091,23 +1020,22 @@
 
             const container = document.getElementById('pelanggaranSiswaDataContainer');
             if(!container) return;
-
             if (pelanggaranSiswaFilteredData.length === 0) {
                 container.innerHTML = '<div class="col-span-full text-center p-10 bg-green-50 rounded-2xl border border-green-200"><div class="text-5xl mb-4">🎉</div><h3 class="text-green-800 font-extrabold text-xl">Tidak Ada Pelanggaran!</h3><p class="text-green-700 mt-2 font-medium">Siswa disiplin dan taat aturan sesuai filter yang dipilih.</p></div>';
                 return;
             }
 
             container.innerHTML = pelanggaranSiswaFilteredData.sort((a,b) => new Date(b.tanggal) - new Date(a.tanggal)).map(row => {
-                let isBerat = row.sub.includes('[Berat]'), isSedang = row.sub.includes('[Sedang]');
+                let isBerat = row.sub && row.sub.includes('[Berat]'), isSedang = row.sub && row.sub.includes('[Sedang]');
                 let badgeColor = isBerat ? 'bg-red-100 text-red-800 border-red-300' : (isSedang ? 'bg-orange-100 text-orange-800 border-orange-300' : 'bg-yellow-100 text-yellow-800 border-yellow-300');
                 let linkDoc = row.dokumentasi ? `<button onclick="openDocPreviewModal('${row.dokumentasi}', '${row.sub}')" class="btn-modern text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-extrabold px-3 py-1.5 rounded-lg border border-indigo-200 mt-3 inline-flex items-center">🖼️ Preview Bukti Dokumentasi</button>` : '';
 
                 return `
-                    <div class="border border-slate-200 rounded-2xl p-5 hover:shadow-md transition-all bg-white relative overflow-hidden">
+                    <div class="border border-slate-200 rounded-2xl p-5 hover:shadow-md transition-all bg-white relative overflow-hidden break-inside-avoid">
                         <div class="flex flex-col sm:flex-row justify-between items-start mb-3 gap-2">
                             <div>
                                 <h4 class="font-extrabold text-slate-800 text-base">${row.sub}</h4>
-                                <p class="text-xs font-semibold text-slate-400 mt-0.5">📅 ${row.tanggal} &bull; Pelapor: ${row.piket}</p>
+                                <p class="text-xs font-semibold text-slate-400 mt-0.5">📅 ${row.tanggal} &bull; Penginput: ${row.piket}</p>
                             </div>
                             <span class="px-3 py-1 text-xs font-black rounded-lg border ${badgeColor}">${isBerat ? '🔴 BERAT' : (isSedang ? '🟠 SEDANG' : '🟡 RINGAN')}</span>
                         </div>
@@ -1120,7 +1048,7 @@
             }).join('');
         }
 
-        function renderRekapGuruPiket() {
+        function applyRekapGuruPiketFilters() {
             if(!globalData.kehadiranPiket) return;
             const container = document.getElementById('guruPiketDataContainer');
             if(!container) return;
@@ -1140,10 +1068,20 @@
             let total = filteredData.length;
             let hadir = 0;
             let absen = 0;
+            const pivot = {};
 
             filteredData.forEach(d => {
-                if (d.status === 'HADIR') hadir++;
-                else absen++;
+                if (!pivot[d.nama]) pivot[d.nama] = { nama: d.nama, H:0, S:0, I:0, A:0, total:0 };
+                const stat = d.status ? d.status.toUpperCase() : '';
+                
+                if (stat === 'HADIR') { hadir++; pivot[d.nama].H++; }
+                else { 
+                    absen++; 
+                    if(stat === 'SAKIT') pivot[d.nama].S++; 
+                    else if(stat === 'IZIN') pivot[d.nama].I++; 
+                    else pivot[d.nama].A++; 
+                }
+                pivot[d.nama].total++;
             });
 
             if(document.getElementById('kpiPiketTotal')) document.getElementById('kpiPiketTotal').innerText = total;
@@ -1154,16 +1092,49 @@
                 container.innerHTML = '<div class="col-span-full text-center p-10 bg-slate-50 rounded-2xl border border-slate-200"><p class="text-slate-500 font-medium">Tidak ada riwayat presensi tim piket sesuai filter.</p></div>';
                 return;
             }
+            
+            const pivotArray = Object.values(pivot).sort((a,b) => b.total - a.total);
 
-            container.innerHTML = filteredData.sort((a,b) => new Date(b.tanggal) - new Date(a.tanggal)).map(row => `
-                <div class="p-4 bg-white border border-slate-200 rounded-2xl flex items-center justify-between hover:shadow-sm transition-shadow">
-                    <div>
-                        <p class="font-bold text-slate-800 text-sm">${row.nama}</p>
-                        <p class="text-xs text-slate-400 mt-0.5">📅 ${row.tanggal} &bull; Ket: <span class="font-semibold text-slate-700">${row.keterangan || '-'}</span></p>
-                    </div>
-                    <span class="px-3 py-1 text-xs font-black rounded-lg ${row.status==='HADIR'?'bg-green-100 text-green-800':(row.status==='IZIN'?'bg-blue-100 text-blue-800':(row.status==='SAKIT'?'bg-yellow-100 text-yellow-800':'bg-red-100 text-red-800'))}">${row.status}</span>
+            container.innerHTML = `
+                <div class="col-span-full table-container rounded-2xl border border-slate-200 shadow-sm mb-8">
+                    <table id="tableRekapGuruPiket" class="w-full text-left whitespace-nowrap">
+                        <thead>
+                            <tr class="bg-purple-50 text-purple-800 text-sm border-b border-purple-100">
+                                <th class="p-4 font-extrabold sticky-col bg-purple-50">Nama Guru Piket</th>
+                                <th class="p-4 text-center font-extrabold border-l border-purple-100">Hadir (H)</th>
+                                <th class="p-4 text-center font-extrabold border-l border-purple-100">Sakit (S)</th>
+                                <th class="p-4 text-center font-extrabold border-l border-purple-100">Izin (I)</th>
+                                <th class="p-4 text-center font-extrabold border-l border-purple-100">Alpa (A)</th>
+                                <th class="p-4 text-center font-extrabold border-l border-purple-100">% Hadir</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            ${pivotArray.map(c => {
+                                const persen = c.total > 0 ? (c.H / c.total) * 100 : 0;
+                                return `
+                                <tr class="hover:bg-purple-50/50 border-b border-slate-100 transition-colors">
+                                    <td class="p-3 font-bold text-slate-700 sticky-col bg-white">${c.nama}</td>
+                                    <td class="p-3 text-center text-green-700 font-extrabold border-l border-slate-100 bg-green-50/30">${c.H}</td>
+                                    <td class="p-3 text-center text-yellow-700 font-extrabold border-l border-slate-100">${c.S}</td>
+                                    <td class="p-3 text-center text-blue-700 font-extrabold border-l border-slate-100">${c.I}</td>
+                                    <td class="p-3 text-center text-red-700 font-extrabold border-l border-slate-100 bg-red-50/30">${c.A}</td>
+                                    <td class="p-3 text-center font-extrabold border-l border-slate-100 ${persen>=80?'text-green-600':persen>=50?'text-yellow-600':'text-red-600'}">${persen.toFixed(1)}%</td>
+                                </tr>`
+                            }).join('')}
+                        </tbody>
+                    </table>
                 </div>
-            `).join('');
+                <div class="col-span-full"><h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">Rincian Log Kehadiran</h3></div>
+                ${filteredData.sort((a,b) => new Date(b.tanggal) - new Date(a.tanggal)).map(row => `
+                    <div class="p-4 bg-white border border-slate-200 rounded-2xl flex items-center justify-between hover:shadow-sm transition-shadow">
+                        <div>
+                            <p class="font-bold text-slate-800 text-sm">${row.nama}</p>
+                            <p class="text-xs text-slate-400 mt-0.5">📅 ${row.tanggal} &bull; Ket: <span class="font-semibold text-slate-700">${row.keterangan || '-'}</span> &bull; Penginput: ${row.penginput}</p>
+                        </div>
+                        <span class="px-3 py-1 text-xs font-black rounded-lg ${row.status==='HADIR'?'bg-green-100 text-green-800':(row.status==='IZIN'?'bg-blue-100 text-blue-800':(row.status==='SAKIT'?'bg-yellow-100 text-yellow-800':'bg-red-100 text-red-800'))}">${row.status}</span>
+                    </div>
+                `).join('')}
+            `;
         }
 
         function applyHadirFilters() {
@@ -1182,7 +1153,7 @@
             const pivot = {};
             tempData.forEach(row => {
                 if (!pivot[row.nama]) pivot[row.nama] = { nama: row.nama, kelas: row.kelas, H:0, S:0, I:0, A:0, T:0, total:0 };
-                const stat = row.status.toUpperCase();
+                const stat = row.status ? row.status.toUpperCase() : '';
                 if (['H', 'S', 'I', 'A', 'T'].includes(stat)) { pivot[row.nama][stat]++; pivot[row.nama].total++; }
             });
 
@@ -1205,7 +1176,6 @@
             
             const tbody = document.getElementById('rekapHadirBody');
             if(!tbody) return;
-
             tbody.innerHTML = hadirFilteredData.length === 0 ? '<tr><td colspan="8" class="p-8 text-center text-slate-500 font-medium bg-slate-50">Tidak ada data kehadiran yang cocok.</td></tr>' 
                 : hadirFilteredData.map(c => `
                     <tr class="hover:bg-indigo-50 border-b border-slate-100 transition-colors">
@@ -1222,22 +1192,21 @@
 
         function applyLanggarFilters() {
             if(!globalData.kejadian) return;
-            const fSearch = document.getElementById('filterLanggarSearch') ? document.getElementById('filterLanggarSearch').value.toLowerCase() : '';
-            const fKategori = document.getElementById('filterLanggarKategori').value;
-            const fBulan = document.getElementById('filterLanggarBulan').value;
+            const fKelas = document.getElementById('filterLanggarKelas') ? document.getElementById('filterLanggarKelas').value.toLowerCase() : '';
+            const fKategori = document.getElementById('filterLanggarKategori') ? document.getElementById('filterLanggarKategori').value : '';
+            const fBulan = document.getElementById('filterLanggarBulan') ? document.getElementById('filterLanggarBulan').value : '';
 
             langgarFilteredData = globalData.kejadian;
             if (currentUser.role === 'SISWA') {
-                langgarFilteredData = langgarFilteredData.filter(d => d.deskripsi.includes(currentUser.nama));
+                langgarFilteredData = langgarFilteredData.filter(d => d.deskripsi && d.deskripsi.includes(currentUser.nama));
             } else {
-                if (fSearch) langgarFilteredData = langgarFilteredData.filter(d => d.deskripsi.toLowerCase().includes(fSearch) || d.sub.toLowerCase().includes(fSearch)); 
+                if (fKelas) langgarFilteredData = langgarFilteredData.filter(d => (d.deskripsi && d.deskripsi.toLowerCase().includes(fKelas)) || (d.sub && d.sub.toLowerCase().includes(fKelas))); 
             }
             if (fKategori) langgarFilteredData = langgarFilteredData.filter(d => d.kategori === fKategori);
             if (fBulan) langgarFilteredData = langgarFilteredData.filter(d => d.tanggal && d.tanggal.split('-')[1] === fBulan);
 
             const container = document.getElementById('langgarDataContainer');
             if(!container) return;
-
             if (langgarFilteredData.length === 0) {
                 container.innerHTML = '<div class="col-span-full text-center p-10 bg-green-50 rounded-2xl border border-green-200"><h3 class="text-green-800 font-extrabold text-xl">🎉 Bersih!</h3><p class="text-green-700 mt-2 font-medium">Tidak ada catatan kejadian sesuai filter.</p></div>';
                 return;
@@ -1250,7 +1219,7 @@
                     <div class="border border-slate-200 rounded-2xl p-5 hover:shadow-lg transition-shadow bg-white relative overflow-hidden break-inside-avoid">
                         <div class="absolute top-0 left-0 w-2 h-full ${badgeColor.split(' ')[0]}"></div>
                         <div class="flex flex-col sm:flex-row justify-between items-start mb-4 pl-3">
-                            <div><h4 class="font-extrabold text-slate-800 text-lg">${row.sub}</h4><p class="text-xs font-semibold text-slate-500 mt-1">📅 ${row.tanggal} &bull; Pelapor: ${row.piket}</p></div>
+                            <div><h4 class="font-extrabold text-slate-800 text-lg">${row.sub}</h4><p class="text-xs font-semibold text-slate-500 mt-1">📅 ${row.tanggal} &bull; Penginput: ${row.piket}</p></div>
                             <span class="px-3 py-1 text-xs font-extrabold rounded-lg ${badgeColor} mt-3 sm:mt-0">${row.kategori}</span>
                         </div>
                         <div class="bg-slate-50 rounded-xl p-4 text-sm pl-5 ml-2 border border-slate-100">
@@ -1283,7 +1252,7 @@
                     pivot[row.nama] = { nama: row.nama, kelas: row.kelas, months: {} };
                     currentMonthsInfo.forEach(mo => pivot[row.nama].months[mo.m] = { H:0, total:0 });
                 }
-                const stat = row.status.toUpperCase();
+                const stat = row.status ? row.status.toUpperCase() : '';
                 if (['H', 'S', 'I', 'A', 'T'].includes(stat)) {
                     pivot[row.nama].months[month].total++;
                     if(['H', 'T'].includes(stat)) pivot[row.nama].months[month].H++; 
@@ -1311,7 +1280,6 @@
         function executeSortTren() {
             const trHeader = document.getElementById('trenHeaderRow');
             if(!trHeader) return;
-
             let headerHTML = `<th class="p-3 font-bold cursor-pointer hover:bg-indigo-100 transition-colors" onclick="sortTren('nama')">Nama Siswa <span class="sort-icon">${sortColTren === 'nama' ? (sortAscTren ? '▲' : '▼') : ''}</span></th>
                               <th class="p-3 font-bold text-center border-l border-indigo-100 cursor-pointer hover:bg-indigo-100 transition-colors" onclick="sortTren('kelas')">Kelas <span class="sort-icon">${sortColTren === 'kelas' ? (sortAscTren ? '▲' : '▼') : ''}</span></th>`;
             
@@ -1348,7 +1316,7 @@
             
             myData.forEach(row => {
                 if(row.tanggal && row.tanggal.split('-')[1] === currentMonth) {
-                    const stat = row.status.toUpperCase();
+                    const stat = row.status ? row.status.toUpperCase() : '';
                     if(['H', 'S', 'I', 'A', 'T'].includes(stat)) { total_bulan++; if(['H', 'T'].includes(stat)) H_bulan++; }
                 }
             });
@@ -1362,7 +1330,7 @@
                 if(!row.tanggal) return;
                 const month = row.tanggal.split('-')[1];
                 if(monthsData[month]) {
-                    const stat = row.status.toUpperCase();
+                    const stat = row.status ? row.status.toUpperCase() : '';
                     if(['H', 'S', 'I', 'A', 'T'].includes(stat)) { monthsData[month].total++; if(['H', 'T'].includes(stat)) monthsData[month].H++; }
                 }
             });
@@ -1408,7 +1376,7 @@
 
             let counts = { H:0, S:0, I:0, A:0, T:0, total:0 };
             myData.forEach(row => {
-                const stat = row.status.toUpperCase();
+                const stat = row.status ? row.status.toUpperCase() : '';
                 if(['H', 'S', 'I', 'A', 'T'].includes(stat)) { counts[stat]++; counts.total++; }
             });
 
@@ -1441,7 +1409,7 @@
             <div id="view-dashboard" class="app-view hidden max-w-5xl mx-auto pb-20 md:pb-8">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
                     <div>
-                        <h2 class="text-2xl md:text-3xl font-extrabold text-slate-800 tracking-tight">Dashboard Ringkasan Operasional</h2>
+                        <h2 class="text-2xl md:text-3xl font-extrabold text-slate-800 tracking-tight">Dashboard Ringkasan</h2>
                         <p class="text-indigo-600 font-bold mt-1 text-sm md:text-base" id="dashDateDisplay">Memuat tanggal...</p>
                     </div>
                     <div class="w-full md:w-auto bg-white p-2 rounded-2xl shadow-sm border border-slate-200">
@@ -1497,21 +1465,17 @@
                         <div class="flex items-center">
                             <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center mr-4 text-xl">👨‍🏫</div>
                             <div>
-                                <h2 class="text-xl font-extrabold text-slate-800">Presensi Tim Piket Hari Ini</h2>
+                                <h2 class="text-xl font-extrabold text-slate-800">Presensi Tim Piket</h2>
                                 <p id="piketHariDisplay" class="text-xs text-indigo-600 font-bold mt-0.5">Jadwal Piket Hari: -</p>
                             </div>
                         </div>
                     </div>
 
                     <form onsubmit="submitPresensiPiket(event)" class="space-y-6">
-                        <div>
-                            <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Tanggal Piket</label>
-                            <input type="date" id="piketTanggal" onchange="renderPresensiPiketForm()" required class="input-modern w-full md:w-64 px-4 py-3 rounded-xl bg-slate-50 font-bold cursor-pointer">
+                        <div id="piketListContainer" class="space-y-3">
                         </div>
 
-                        <div id="piketListContainer" class="space-y-3"></div>
-
-                        <button type="submit" class="btn-modern bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-3.5 rounded-xl shadow-lg shadow-indigo-200">
+                        <button type="submit" class="btn-modern bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-3.5 rounded-xl shadow-lg shadow-indigo-200 w-full md:w-auto">
                             Simpan Presensi Tim Piket
                         </button>
                     </form>
@@ -1570,22 +1534,22 @@
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
                     <div class="flex items-center mb-6 border-b border-slate-100 pb-4">
                         <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center mr-4 text-xl">🏫</div>
-                        <h2 class="text-xl font-extrabold text-slate-800">Pemantauan Pembelajaran Kelas</h2>
+                        <h2 class="text-xl font-extrabold text-slate-800">Pantau Pembelajaran Kelas</h2>
                     </div>
 
                     <form id="formPemantauan" onsubmit="submitPemantauan(event)" class="space-y-6">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Tanggal</label><input type="date" id="pantauTanggal" required onchange="updateHariPantau()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 font-bold"></div>
+                            <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Tanggal</label><input type="date" id="pantauTanggal" required onchange="updateHariPantau()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 font-bold cursor-pointer"></div>
                             <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Hari</label><input type="text" id="pantauHari" readonly class="w-full px-4 py-3.5 rounded-xl bg-slate-100 text-slate-500 font-bold border border-slate-200 outline-none"></div>
                         </div>
                         
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             <div>
                                 <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Kelas</label>
-                                <select id="pantauKelas" required onchange="loadMapelByKelas()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 font-bold cursor-pointer"></select>
+                                <select id="pantauKelas" required onchange="loadMapelByKelas()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"></select>
                             </div>
                             <div>
-                                <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Jam Ke- (Bisa Pilih Banyak)</label>
+                                <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Jam Ke-</label>
                                 <div class="grid grid-cols-6 gap-2">
                                     ${[1,2,3,4,5,6,7,8,9,10,11,12].map(i => `
                                     <label class="relative block cursor-pointer group">
@@ -1600,7 +1564,7 @@
                         <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 rounded-2xl border border-indigo-100 flex flex-col sm:flex-row gap-4 shadow-sm">
                             <div class="flex-1">
                                 <label class="text-xs font-bold text-indigo-600 uppercase tracking-wider">Mata Pelajaran</label>
-                                <select id="pantauMapel" required onchange="updateGuruPantau()" class="w-full mt-1 bg-transparent font-black text-slate-800 text-lg border-b-2 border-indigo-200 focus:border-indigo-500 outline-none cursor-pointer pb-1">
+                                <select id="pantauMapel" required onchange="updateGuruPantau()" class="w-full mt-1 bg-transparent font-black text-slate-800 text-lg border-b-2 border-indigo-200 focus:border-indigo-500 outline-none appearance-none cursor-pointer pb-1">
                                     <option value="">-- Pilih Kelas Dahulu --</option>
                                 </select>
                             </div>
@@ -1614,42 +1578,93 @@
                             <label class="block text-sm font-extrabold text-slate-800 mb-3">Kondisi Pembelajaran Saat Ini</label>
                             <div class="space-y-3">
                                 <label class="relative block cursor-pointer group">
-                                    <input type="radio" name="pantauStatus" value="Ada Guru" required onclick="toggleDetailKondisi('Ada Guru')" class="peer sr-only radio-card-input">
+                                    <input type="radio" name="pantauStatus" value="Ada Guru" required class="peer sr-only radio-card-input">
                                     <div class="radio-card-body p-4 rounded-xl border-2 border-slate-200 group-hover:border-indigo-300 transition-colors flex items-center bg-white">
-                                        <div class="w-5 h-5 rounded-full border-2 border-slate-300 mr-4 flex items-center justify-center transition-all peer-checked:border-indigo-600 peer-checked:bg-indigo-600"></div>
-                                        <span class="font-bold text-slate-700">🟢 Ada Guru (H)</span>
+                                        <div class="w-5 h-5 rounded-full border-2 border-slate-300 mr-4 flex items-center justify-center"></div>
+                                        <span class="font-bold text-slate-700">🟢 H (Ada Guru di Kelas)</span>
                                     </div>
                                 </label>
                                 <label class="relative block cursor-pointer group">
-                                    <input type="radio" name="pantauStatus" value="Tidak ada guru, ada tugas" onclick="toggleDetailKondisi('Tidak ada guru, ada tugas')" class="peer sr-only radio-card-input">
+                                    <input type="radio" name="pantauStatus" value="Tidak ada guru, ada tugas" class="peer sr-only radio-card-input">
                                     <div class="radio-card-body p-4 rounded-xl border-2 border-slate-200 group-hover:border-indigo-300 transition-colors flex items-center bg-white">
-                                        <div class="w-5 h-5 rounded-full border-2 border-slate-300 mr-4 flex items-center justify-center transition-all"></div>
-                                        <span class="font-bold text-slate-700">🟡 Tidak Ada Guru, Ada Tugas (TGS)</span>
+                                        <div class="w-5 h-5 rounded-full border-2 border-slate-300 mr-4 flex items-center justify-center"></div>
+                                        <span class="font-bold text-slate-700">🟡 TGS (Tidak ada guru, tapi ada tugas)</span>
                                     </div>
                                 </label>
                                 <label class="relative block cursor-pointer group">
-                                    <input type="radio" name="pantauStatus" value="Tidak ada guru, tidak ada tugas" onclick="toggleDetailKondisi('Tidak ada guru, tidak ada tugas')" class="peer sr-only radio-card-input">
+                                    <input type="radio" name="pantauStatus" value="Tidak ada guru, tidak ada tugas" class="peer sr-only radio-card-input">
                                     <div class="radio-card-body p-4 rounded-xl border-2 border-slate-200 group-hover:border-indigo-300 transition-colors flex items-center bg-white">
-                                        <div class="w-5 h-5 rounded-full border-2 border-slate-300 mr-4 flex items-center justify-center transition-all"></div>
-                                        <span class="font-bold text-slate-700">🔴 Tidak Ada Guru, Tidak Ada Tugas (TH)</span>
+                                        <div class="w-5 h-5 rounded-full border-2 border-slate-300 mr-4 flex items-center justify-center"></div>
+                                        <span class="font-bold text-slate-700">🔴 TH (Tidak ada guru, tidak ada tugas)</span>
                                     </div>
                                 </label>
                             </div>
                         </div>
 
-                        <div id="detailTugasContainer" class="hidden bg-slate-50 p-5 rounded-2xl border border-slate-200 mt-4 fade-in-up">
-                            <label class="block text-sm font-extrabold text-slate-800 mb-3">Pilih Bentuk Tugas:</label>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                                <label class="flex items-center space-x-3 cursor-pointer"><input type="checkbox" value="Mengerjakan LKPD" class="pantauBentukTugas w-5 h-5 rounded text-indigo-600 focus:ring-indigo-500 border-gray-300"><span class="font-semibold text-slate-700">Mengerjakan LKPD</span></label>
-                                <label class="flex items-center space-x-3 cursor-pointer"><input type="checkbox" value="Merangkum Materi" class="pantauBentukTugas w-5 h-5 rounded text-indigo-600 focus:ring-indigo-500 border-gray-300"><span class="font-semibold text-slate-700">Merangkum Materi</span></label>
-                                <label class="flex items-center space-x-3 cursor-pointer"><input type="checkbox" value="Latihan Soal" class="pantauBentukTugas w-5 h-5 rounded text-indigo-600 focus:ring-indigo-500 border-gray-300"><span class="font-semibold text-slate-700">Latihan Soal</span></label>
-                                <label class="flex items-center space-x-3 cursor-pointer"><input type="checkbox" value="Tugas dari LMS" class="pantauBentukTugas w-5 h-5 rounded text-indigo-600 focus:ring-indigo-500 border-gray-300"><span class="font-semibold text-slate-700">Tugas via LMS / WA</span></label>
-                            </div>
-                        </div>
-
-                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2 mt-4">Catatan Tambahan (Opsional)</label><input type="text" id="pantauCatatan" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 placeholder-slate-400" placeholder="Ketik catatan kondisi kelas..."></div>
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Catatan Tambahan (Opsional)</label><input type="text" id="pantauCatatan" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 placeholder-slate-400" placeholder="Ketik catatan kondisi kelas..."></div>
                         
                         <button type="submit" class="btn-modern w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-200 mt-4 text-lg">Simpan Laporan Pantauan</button>
+                    </form>
+                </div>
+            </div>`;
+        }
+
+        function getViewKejadian() {
+            return `
+            <div id="view-kejadian" class="app-view hidden max-w-3xl mx-auto pb-20 md:pb-8">
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
+                    <div class="flex items-center mb-6 border-b border-slate-100 pb-4">
+                        <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center mr-4 text-xl">⚠️</div>
+                        <h2 class="text-xl font-extrabold text-slate-800">Lapor Kejadian & Pelanggaran</h2>
+                    </div>
+                    
+                    <form id="formKejadian" onsubmit="submitKejadian(event)" class="space-y-5">
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Tanggal Kejadian</label><input type="date" id="kejadianTanggal" required class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 font-bold cursor-pointer"></div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Kategori Utama</label>
+                                <select id="kejadianKategori" required onchange="updateSubKategori()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer">
+                                    <option value="">-- Pilih --</option>
+                                    <option value="Siswa">Siswa (Pelanggaran/Kasus)</option>
+                                    <option value="Guru">Guru</option>
+                                    <option value="Sarpras">Sarpras & Lingkungan</option>
+                                    <option value="Khusus">Kejadian Khusus</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Rincian & Bobot Sanksi</label>
+                                <select id="kejadianSubKategori" required class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer">
+                                    <option value="">-- Pilih Kategori Dahulu --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="kejadianSiswaContainer" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-5 bg-rose-50 p-5 rounded-2xl border border-rose-100">
+                            <div class="col-span-full mb-1"><p class="text-sm font-bold text-rose-800">Identitas Siswa Terkait:</p></div>
+                            <div>
+                                <label class="block text-xs font-extrabold text-rose-600 uppercase tracking-wider mb-2">Kelas</label>
+                                <select id="kejadianKelas" onchange="loadStudentsForKejadian()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-white font-bold appearance-none border-rose-200 cursor-pointer">
+                                    <option value="">-- Pilih Kelas --</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-extrabold text-rose-600 uppercase tracking-wider mb-2">Nama Siswa</label>
+                                <select id="kejadianNama" class="input-modern w-full px-4 py-3.5 rounded-xl bg-white font-bold appearance-none border-rose-200 cursor-pointer">
+                                    <option value="">-- Pilih Kelas Dahulu --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div><label id="labelDeskripsiKejadian" class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Deskripsi Detail Kejadian</label><textarea id="kejadianDeskripsi" required rows="3" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 placeholder-slate-400" placeholder="Ketik bentuk pelanggaran atau kronologi..."></textarea></div>
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Tindakan / Sanksi</label><input type="text" id="kejadianTindakLanjut" required class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 placeholder-slate-400" placeholder="Teguran / Panggilan Ortu..."></div>
+                        
+                        <div>
+                            <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Dokumentasi (Maks 10MB)</label>
+                            <input type="file" id="kejadianFile" accept="image/*,.pdf" class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-rose-50 file:text-rose-700 hover:file:bg-rose-100 cursor-pointer bg-slate-50">
+                        </div>
+
+                        <button type="submit" class="btn-modern w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-rose-200 mt-4 text-lg">Catat & Simpan Laporan</button>
                     </form>
                 </div>
             </div>`;
@@ -1659,38 +1674,45 @@
             return `
             <div id="view-ceklistPemantauan" class="app-view hidden max-w-6xl mx-auto pb-20 md:pb-8">
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b border-slate-100 pb-6 gap-4">
-                        <div>
-                            <h2 class="text-2xl font-extrabold text-slate-800 flex items-center"><span class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center mr-3 text-lg">✅</span> Ceklist KBM (Hari Ini)</h2>
-                            <p class="text-xs text-slate-500 font-medium mt-1">Status kelengkapan input pemantauan kelas per jam.</p>
-                        </div>
-                        <div class="w-full md:w-auto bg-slate-100 px-4 py-2.5 rounded-xl border border-slate-200 flex items-center justify-between" title="Dikunci untuk menampilkan hari ini saja">
-                            <div class="flex items-center">
-                                <span class="text-slate-400 mr-2 text-sm">📅</span>
-                                <input type="text" id="ceklistTanggal" class="w-28 bg-transparent border-none font-bold text-slate-500 outline-none cursor-not-allowed pointer-events-none" readonly tabindex="-1">
+                    <div class="flex items-center justify-between mb-8 border-b border-slate-100 pb-6">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center mr-3 text-lg">📋</div>
+                            <div>
+                                <h2 class="text-xl font-extrabold text-slate-800">Ceklist Pemantauan KBM (Matriks)</h2>
+                                <p class="text-xs text-slate-500 font-medium mt-1">Cek kelas dan jam mana yang belum Anda pantau hari ini.</p>
                             </div>
-                            <span class="ml-3 text-[10px] font-extrabold text-slate-400 bg-slate-200 px-2 py-1 rounded-md uppercase tracking-wide">Terkunci</span>
+                        </div>
+                        <div>
+                            <input type="date" id="ceklistTanggal" disabled class="px-4 py-2 bg-slate-100 text-slate-500 font-bold rounded-xl border border-slate-200 text-sm cursor-not-allowed">
                         </div>
                     </div>
                     
-                    <div class="flex flex-wrap gap-4 mb-4 text-xs font-bold text-slate-600 bg-slate-50 p-4 rounded-xl border border-slate-200">
-                        <div class="flex items-center"><span class="w-5 h-5 bg-emerald-100 border border-emerald-200 text-emerald-700 flex items-center justify-center rounded mr-2">H</span> Ada Guru</div>
-                        <div class="flex items-center"><span class="w-5 h-5 bg-amber-100 border border-amber-200 text-amber-700 flex items-center justify-center rounded mr-2">TGS</span> Tanpa Guru (Ada Tugas)</div>
-                        <div class="flex items-center"><span class="w-5 h-5 bg-rose-100 border border-rose-200 text-rose-700 flex items-center justify-center rounded mr-2">TH</span> Tanpa Guru & Tanpa Tugas</div>
-                        <div class="flex items-center"><span class="w-5 h-5 bg-white border border-slate-200 text-slate-300 flex items-center justify-center rounded mr-2">-</span> Belum Diisi</div>
+                    <div class="flex gap-4 mb-4 text-xs font-bold">
+                        <div class="flex items-center"><span class="w-4 h-4 bg-green-500 rounded mr-2"></span> H (Ada Guru)</div>
+                        <div class="flex items-center"><span class="w-4 h-4 bg-yellow-500 rounded mr-2"></span> TGS (Ada Tugas)</div>
+                        <div class="flex items-center"><span class="w-4 h-4 bg-red-500 rounded mr-2"></span> TH (Kosong)</div>
+                        <div class="flex items-center"><span class="text-slate-400 font-extrabold mr-2">-</span> Belum diinput</div>
                     </div>
 
-                    <div class="table-container rounded-2xl border border-slate-200 shadow-sm overflow-x-auto">
-                        <table class="w-full text-left whitespace-nowrap">
-                            <thead>
-                                <tr class="bg-emerald-50 text-emerald-800 text-sm border-b border-emerald-100">
-                                    <th class="p-4 font-extrabold text-center sticky-col-header z-20 border-r border-emerald-100">Jam Ke-</th>
-                                    ${FIXED_CLASSES.map(c => `<th class="p-4 font-extrabold text-center border-r border-emerald-100">${c}</th>`).join('')}
-                                </tr>
-                            </thead>
-                            <tbody id="ceklistPemantauanBody" class="text-sm"></tbody>
-                        </table>
+                    <div id="ceklistMatrixContainer" class="table-container rounded-2xl border border-slate-200 shadow-sm">
                     </div>
+                </div>
+            </div>`;
+        }
+
+        function getViewLogbook() {
+            return `
+            <div id="view-logbook" class="app-view hidden max-w-4xl mx-auto pb-20 md:pb-8">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 gap-4 no-print">
+                    <h2 class="text-3xl font-extrabold text-slate-800">Logbook Harian</h2>
+                    <div class="flex space-x-3 w-full sm:w-auto">
+                        <input type="date" id="logbookDate" class="input-modern flex-1 sm:w-auto px-4 py-2.5 rounded-xl bg-white font-bold shadow-sm" onchange="fetchLogbook()">
+                        <button onclick="window.print()" class="btn-modern bg-slate-800 hover:bg-slate-900 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg flex items-center whitespace-nowrap">
+                            <span class="mr-2">🖨️</span> Cetak PDF
+                        </button>
+                    </div>
+                </div>
+                <div class="bg-white p-6 md:p-10 rounded-3xl shadow-sm border border-slate-200 print:shadow-none print:border-none print:p-0" id="logbookContent">
                 </div>
             </div>`;
         }
@@ -1717,24 +1739,28 @@
                             <p id="kpiPantauTotal" class="text-3xl font-black text-slate-800 mt-1">0</p>
                         </div>
                         <div class="p-4 bg-green-50 rounded-2xl border border-green-200 text-center">
-                            <p class="text-xs font-bold text-green-700 uppercase">🟢 Ada Guru</p>
+                            <p class="text-xs font-bold text-green-700 uppercase">🟢 H (Ada Guru)</p>
                             <p id="kpiPantauNormal" class="text-3xl font-black text-green-700 mt-1">0</p>
                         </div>
-                        <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-center">
-                            <p class="text-xs font-bold text-amber-700 uppercase">🟡 TGS (Ada Tugas)</p>
-                            <p id="kpiPantauBelum" class="text-3xl font-black text-amber-700 mt-1">0</p>
+                        <div class="p-4 bg-yellow-50 rounded-2xl border border-yellow-200 text-center">
+                            <p class="text-xs font-bold text-yellow-700 uppercase">🟡 TGS (Ada Tugas)</p>
+                            <p id="kpiPantauBelum" class="text-3xl font-black text-yellow-700 mt-1">0</p>
                         </div>
                         <div class="p-4 bg-red-50 rounded-2xl border border-red-200 text-center">
-                            <p class="text-xs font-bold text-red-700 uppercase">🔴 TH (Kosong)</p>
+                            <p class="text-xs font-bold text-red-700 uppercase">🔴 Tidak Hadir (Kosong)</p>
                             <p id="kpiPantauKosong" class="text-3xl font-black text-red-700 mt-1">0</p>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8 filter-section">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4 filter-section">
                         <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Kelas</label><select id="filterPemantauanKelas" onchange="applyPemantauanFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"></select></div>
-                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Status Pembelajaran</label><select id="filterPemantauanStatus" onchange="applyPemantauanFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"><option value="">Semua Status</option><option value="H">🟢 Ada Guru</option><option value="TGS">🟡 TGS (Tanpa Guru, Ada Tugas)</option><option value="TH">🔴 TH (Tanpa Guru, Tanpa Tugas)</option></select></div>
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Status Pembelajaran</label><select id="filterPemantauanStatus" onchange="applyPemantauanFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"><option value="">Semua Status</option><option value="Pembelajaran berlangsung dengan guru">🟢 Normal</option><option value="Guru belum / tidak berada di kelas">🟡 Belum di Kelas</option><option value="Guru tidak hadir">🔴 Tidak Hadir</option></select></div>
                         <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Bulan</label><select id="filterPemantauanBulan" onchange="applyPemantauanFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"><option value="">Semua Bulan</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option></select></div>
-                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Cari Nama Guru / Mapel</label><input type="text" id="filterPemantauanSearch" onkeyup="applyPemantauanFilters()" placeholder="Ketik kata kunci..." class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 placeholder-slate-400"></div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 filter-section">
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Dari Tanggal</label><input type="date" id="filterPemantauanMulai" onchange="applyPemantauanFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold cursor-pointer"></div>
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Sampai Tanggal</label><input type="date" id="filterPemantauanAkhir" onchange="applyPemantauanFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold cursor-pointer"></div>
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Cari Nama Guru / Mapel</label><input type="text" id="filterPemantauanSearch" onkeyup="applyPemantauanFilters()" placeholder="Ketik nama guru..." class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 placeholder-slate-400"></div>
                     </div>
 
                     <div class="table-container rounded-2xl border border-slate-200 shadow-sm">
@@ -1748,87 +1774,12 @@
                                     <th class="p-4">Guru Pengajar</th>
                                     <th class="p-4">Status Kondisi</th>
                                     <th class="p-4">Penugasan</th>
+                                    <th class="p-4 text-indigo-600">Petugas Penginput</th>
                                 </tr>
                             </thead>
                             <tbody id="tablePemantauanBody" class="text-sm"></tbody>
                         </table>
                     </div>
-                </div>
-            </div>`;
-        }
-
-        function getViewKejadian() {
-            return `
-            <div id="view-kejadian" class="app-view hidden max-w-3xl mx-auto pb-20 md:pb-8">
-                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
-                    <div class="flex items-center mb-6 border-b border-slate-100 pb-4">
-                        <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center mr-4 text-xl">⚠️</div>
-                        <h2 class="text-xl font-extrabold text-slate-800">Lapor Kejadian & Pelanggaran</h2>
-                    </div>
-                    
-                    <form id="formKejadian" onsubmit="submitKejadian(event)" class="space-y-5">
-                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Tanggal Kejadian</label><input type="date" id="kejadianTanggal" required class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 font-bold"></div>
-                        
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            <div>
-                                <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Kategori Utama</label>
-                                <select id="kejadianKategori" required onchange="updateSubKategori()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 font-bold appearance-none">
-                                    <option value="">-- Pilih --</option>
-                                    <option value="Siswa">Siswa (Pelanggaran/Kasus)</option>
-                                    <option value="Guru">Guru</option>
-                                    <option value="Sarpras">Sarpras & Lingkungan</option>
-                                    <option value="Khusus">Kejadian Khusus</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Rincian & Bobot Sanksi</label>
-                                <select id="kejadianSubKategori" required class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 font-bold appearance-none">
-                                    <option value="">-- Pilih Kategori Dahulu --</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div id="kejadianSiswaContainer" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-5 bg-rose-50 p-5 rounded-2xl border border-rose-100">
-                            <div class="col-span-full mb-1"><p class="text-sm font-bold text-rose-800">Identitas Siswa Terkait:</p></div>
-                            <div>
-                                <label class="block text-xs font-extrabold text-rose-600 uppercase tracking-wider mb-2">Kelas</label>
-                                <select id="kejadianKelas" onchange="loadStudentsForKejadian()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-white font-bold appearance-none border-rose-200"></select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-extrabold text-rose-600 uppercase tracking-wider mb-2">Nama Siswa</label>
-                                <select id="kejadianNama" class="input-modern w-full px-4 py-3.5 rounded-xl bg-white font-bold appearance-none border-rose-200">
-                                    <option value="">-- Pilih Kelas Dahulu --</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div><label id="labelDeskripsiKejadian" class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Deskripsi Detail Kejadian</label><textarea id="kejadianDeskripsi" required rows="3" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 placeholder-slate-400" placeholder="Ketik bentuk pelanggaran atau kronologi..."></textarea></div>
-                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Tindakan / Sanksi</label><input type="text" id="kejadianTindakLanjut" required class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 placeholder-slate-400" placeholder="Teguran / Panggilan Ortu..."></div>
-                        
-                        <div>
-                            <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Dokumentasi (Maks 10MB)</label>
-                            <input type="file" id="kejadianFile" accept="image/*,.pdf" class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-rose-50 file:text-rose-700 hover:file:bg-rose-100 cursor-pointer bg-slate-50">
-                        </div>
-
-                        <button type="submit" class="btn-modern w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-rose-200 mt-4 text-lg">Catat & Simpan Laporan</button>
-                    </form>
-                </div>
-            </div>`;
-        }
-
-        function getViewLogbook() {
-            return `
-            <div id="view-logbook" class="app-view hidden max-w-4xl mx-auto pb-20 md:pb-8">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 gap-4 no-print">
-                    <h2 class="text-3xl font-extrabold text-slate-800">Logbook Harian</h2>
-                    <div class="flex space-x-3 w-full sm:w-auto">
-                        <input type="date" id="logbookDate" class="input-modern flex-1 sm:w-auto px-4 py-2.5 rounded-xl bg-white font-bold shadow-sm" onchange="fetchLogbook()">
-                        <button onclick="window.print()" class="btn-modern bg-slate-800 hover:bg-slate-900 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg flex items-center whitespace-nowrap">
-                            <span class="mr-2">🖨️</span> Cetak PDF
-                        </button>
-                    </div>
-                </div>
-                <div class="bg-white p-6 md:p-10 rounded-3xl shadow-sm border border-slate-200 print:shadow-none print:border-none print:p-0" id="logbookContent">
                 </div>
             </div>`;
         }
@@ -1843,75 +1794,35 @@
                             <h2 class="text-2xl font-extrabold text-slate-800 flex items-center"><span class="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center mr-3 text-lg">👨‍🏫</span> Rekap Kehadiran Tim Piket</h2>
                             <p class="text-xs text-slate-500 font-medium mt-1">Pantau kehadiran guru piket berdasarkan hari, minggu, atau bulan.</p>
                         </div>
-                        <div class="filter-section"><button onclick="printView('Laporan Guru Piket')" class="btn-modern bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-xl font-bold transition-colors">Cetak PDF</button></div>
+                        <div class="filter-section flex space-x-3 w-full md:w-auto">
+                            <button onclick="printView('Laporan Guru Piket')" class="btn-modern flex-1 md:flex-none bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-xl font-bold transition-colors">Cetak PDF</button>
+                            <button onclick="exportTableToExcel('tableRekapGuruPiket', 'Rekap_Kehadiran_Piket')" class="btn-modern flex-1 md:flex-none bg-emerald-100 text-emerald-700 hover:bg-emerald-200 px-5 py-2.5 rounded-xl font-bold transition-colors">Export Excel</button>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-3 gap-4 mb-8">
                         <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-center">
-                            <p class="text-xs font-bold text-slate-500 uppercase">Total Data</p>
+                            <p class="text-xs font-bold text-slate-500 uppercase">Total Log Presensi</p>
                             <p id="kpiPiketTotal" class="text-3xl font-black text-slate-800 mt-1">0</p>
                         </div>
                         <div class="p-4 bg-green-50 rounded-2xl border border-green-200 text-center">
-                            <p class="text-xs font-bold text-green-700 uppercase">Hadir</p>
+                            <p class="text-xs font-bold text-green-700 uppercase">Total Hadir (H)</p>
                             <p id="kpiPiketHadir" class="text-3xl font-black text-green-700 mt-1">0</p>
                         </div>
                         <div class="p-4 bg-red-50 rounded-2xl border border-red-200 text-center">
-                            <p class="text-xs font-bold text-red-700 uppercase">Tidak Hadir (I/S/A)</p>
+                            <p class="text-xs font-bold text-red-700 uppercase">Total Absen (S/I/A)</p>
                             <p id="kpiPiketAbsen" class="text-3xl font-black text-red-700 mt-1">0</p>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8 filter-section">
-                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Bulan</label><select id="filterPiketBulan" onchange="renderRekapGuruPiket()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"><option value="">Semua Bulan</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option></select></div>
-                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Dari Tanggal</label><input type="date" id="filterPiketMulai" onchange="renderRekapGuruPiket()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold cursor-pointer"></div>
-                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Sampai Tanggal</label><input type="date" id="filterPiketAkhir" onchange="renderRekapGuruPiket()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold cursor-pointer"></div>
-                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Cari Nama Guru</label><input type="text" id="filterPiketNama" onkeyup="renderRekapGuruPiket()" placeholder="Ketik nama guru..." class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 placeholder-slate-400"></div>
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Bulan</label><select id="filterPiketBulan" onchange="applyRekapGuruPiketFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"><option value="">Semua Bulan</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option></select></div>
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Dari Tgl</label><input type="date" id="filterPiketMulai" onchange="applyRekapGuruPiketFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold cursor-pointer"></div>
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Sampai Tgl</label><input type="date" id="filterPiketAkhir" onchange="applyRekapGuruPiketFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold cursor-pointer"></div>
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Cari Nama Guru Piket</label><input type="text" id="filterPiketNama" onkeyup="applyRekapGuruPiketFilters()" placeholder="Ketik nama guru..." class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 placeholder-slate-400"></div>
                     </div>
 
-                    <div id="guruPiketDataContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-                </div>
-            </div>`;
-        }
-
-        function getViewRekapHadir() {
-            return `
-            <div id="view-rekapHadir" class="app-view hidden max-w-6xl mx-auto pb-20 md:pb-8">
-                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
-                    <div class="print-header"><h2 class="text-2xl font-bold">Rekapitulasi Kehadiran Siswa</h2></div>
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-slate-100 pb-6 gap-4">
-                        <div>
-                            <h2 class="text-2xl font-extrabold text-slate-800 flex items-center"><span class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mr-3 text-lg">📊</span> Rekap Kehadiran Siswa</h2>
-                        </div>
-                        <div class="flex space-x-3 w-full md:w-auto filter-section">
-                            <button onclick="printView('Laporan Kehadiran Siswa')" class="btn-modern flex-1 md:flex-none bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-xl font-bold">Cetak PDF</button>
-                            <button onclick="exportTableToExcel('tableRekapHadir', 'Rekap_Hadir_Siswa')" class="btn-modern flex-1 md:flex-none bg-emerald-100 text-emerald-700 hover:bg-emerald-200 px-5 py-2.5 rounded-xl font-bold">Export Excel</button>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 filter-section">
-                        <div>
-                            <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Kelas</label>
-                            <select id="filterHadirKelas" onchange="applyHadirFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"></select>
-                        </div>
-                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Bulan</label><select id="filterHadirBulan" onchange="applyHadirFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"><option value="">Semua</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option></select></div>
-                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Dari</label><input type="date" id="filterHadirMulai" onchange="applyHadirFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold cursor-pointer"></div>
-                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Sampai</label><input type="date" id="filterHadirAkhir" onchange="applyHadirFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold cursor-pointer"></div>
-                    </div>
-                    
-                    <div class="table-container rounded-2xl border border-slate-200 shadow-sm">
-                        <table id="tableRekapHadir" class="w-full text-left whitespace-nowrap">
-                        <thead><tr class="bg-indigo-50 text-indigo-800 text-sm border-b border-indigo-100">
-                            <th class="p-4 font-extrabold cursor-pointer sticky-col-header hover:bg-indigo-100 transition-colors" onclick="sortHadir('nama')">Nama <span class="sort-icon" id="sort-icon-nama"></span></th>
-                            <th class="p-4 font-extrabold cursor-pointer border-l border-indigo-100 hover:bg-indigo-100 transition-colors" onclick="sortHadir('kelas')">Kelas <span class="sort-icon" id="sort-icon-kelas"></span></th>
-                            <th class="p-4 text-center font-extrabold cursor-pointer border-l border-indigo-100 hover:bg-indigo-100 transition-colors" onclick="sortHadir('H')">H <span class="sort-icon" id="sort-icon-H"></span></th>
-                            <th class="p-4 text-center font-extrabold cursor-pointer border-l border-indigo-100 hover:bg-indigo-100 transition-colors" onclick="sortHadir('S')">S <span class="sort-icon" id="sort-icon-S"></span></th>
-                            <th class="p-4 text-center font-extrabold cursor-pointer border-l border-indigo-100 hover:bg-indigo-100 transition-colors" onclick="sortHadir('I')">I <span class="sort-icon" id="sort-icon-I"></span></th>
-                            <th class="p-4 text-center font-extrabold cursor-pointer border-l border-indigo-100 hover:bg-indigo-100 transition-colors" onclick="sortHadir('A')">A <span class="sort-icon" id="sort-icon-A"></span></th>
-                            <th class="p-4 text-center font-extrabold cursor-pointer border-l border-indigo-100 hover:bg-indigo-100 transition-colors" onclick="sortHadir('T')">T <span class="sort-icon" id="sort-icon-T"></span></th>
-                            <th class="p-4 text-center font-extrabold cursor-pointer border-l border-indigo-100 hover:bg-indigo-100 transition-colors" onclick="sortHadir('persen')">% <span class="sort-icon" id="sort-icon-persen"></span></th>
-                        </tr></thead>
-                        <tbody id="rekapHadirBody" class="text-sm"></tbody>
-                    </table></div>
+                    <div id="guruPiketDataContainer"></div>
                 </div>
             </div>`;
         }
@@ -1947,16 +1858,53 @@
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8 filter-section">
-                        <div>
-                            <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Kelas</label>
-                            <select id="filterPelanggaranKelas" onchange="applyPelanggaranSiswaFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"></select>
-                        </div>
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Kelas</label><select id="filterPelanggaranKelas" onchange="applyPelanggaranSiswaFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"></select></div>
                         <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Tingkat Sanksi</label><select id="filterPelanggaranTingkat" onchange="applyPelanggaranSiswaFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"><option value="">Semua Tingkat</option><option value="Ringan">Ringan</option><option value="Sedang">Sedang</option><option value="Berat">Berat</option></select></div>
                         <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Bulan</label><select id="filterPelanggaranBulan" onchange="applyPelanggaranSiswaFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"><option value="">Semua Bulan</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option></select></div>
-                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Cari Nama Siswa</label><input type="text" id="filterPelanggaranSearch" onkeyup="applyPelanggaranSiswaFilters()" placeholder="Ketik nama siswa..." class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 placeholder-slate-400"></div>
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Cari Nama / Rincian</label><input type="text" id="filterPelanggaranSearch" onkeyup="applyPelanggaranSiswaFilters()" placeholder="Ketik kata kunci..." class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 placeholder-slate-400"></div>
                     </div>
 
                     <div id="pelanggaranSiswaDataContainer" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+                </div>
+            </div>`;
+        }
+
+        function getViewRekapHadir() {
+            return `
+            <div id="view-rekapHadir" class="app-view hidden max-w-6xl mx-auto pb-20 md:pb-8">
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
+                    <div class="print-header"><h2 class="text-2xl font-bold">Rekapitulasi Kehadiran Siswa</h2></div>
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-slate-100 pb-6 gap-4">
+                        <div>
+                            <h2 class="text-2xl font-extrabold text-slate-800 flex items-center"><span class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mr-3 text-lg">📊</span> Rekap Kehadiran Siswa</h2>
+                        </div>
+                        <div class="flex space-x-3 w-full md:w-auto filter-section">
+                            <button onclick="printView('Laporan Kehadiran Siswa')" class="btn-modern flex-1 md:flex-none bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-xl font-bold">Cetak PDF</button>
+                            <button onclick="exportTableToExcel('tableRekapHadir', 'Rekap_Hadir_Siswa')" class="btn-modern flex-1 md:flex-none bg-emerald-100 text-emerald-700 hover:bg-emerald-200 px-5 py-2.5 rounded-xl font-bold">Export Excel</button>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 filter-section">
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Kelas</label><select id="filterHadirKelas" onchange="applyHadirFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"></select></div>
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Bulan</label><select id="filterHadirBulan" onchange="applyHadirFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"><option value="">Semua</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option></select></div>
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Dari</label><input type="date" id="filterHadirMulai" onchange="applyHadirFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold cursor-pointer"></div>
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Sampai</label><input type="date" id="filterHadirAkhir" onchange="applyHadirFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold cursor-pointer"></div>
+                    </div>
+                    
+                    <div class="table-container rounded-2xl border border-slate-200 shadow-sm">
+                        <table id="tableRekapHadir" class="w-full text-left whitespace-nowrap">
+                        <thead><tr class="bg-indigo-50 text-indigo-800 text-sm border-b border-indigo-100">
+                            <th class="p-4 font-extrabold cursor-pointer sticky-col-header hover:bg-indigo-100 transition-colors" onclick="sortHadir('nama')">Nama <span class="sort-icon" id="sort-icon-nama"></span></th>
+                            <th class="p-4 font-extrabold cursor-pointer border-l border-indigo-100 hover:bg-indigo-100 transition-colors" onclick="sortHadir('kelas')">Kelas <span class="sort-icon" id="sort-icon-kelas"></span></th>
+                            <th class="p-4 text-center font-extrabold cursor-pointer border-l border-indigo-100 hover:bg-indigo-100 transition-colors" onclick="sortHadir('H')">H <span class="sort-icon" id="sort-icon-H"></span></th>
+                            <th class="p-4 text-center font-extrabold cursor-pointer border-l border-indigo-100 hover:bg-indigo-100 transition-colors" onclick="sortHadir('S')">S <span class="sort-icon" id="sort-icon-S"></span></th>
+                            <th class="p-4 text-center font-extrabold cursor-pointer border-l border-indigo-100 hover:bg-indigo-100 transition-colors" onclick="sortHadir('I')">I <span class="sort-icon" id="sort-icon-I"></span></th>
+                            <th class="p-4 text-center font-extrabold cursor-pointer border-l border-indigo-100 hover:bg-indigo-100 transition-colors" onclick="sortHadir('A')">A <span class="sort-icon" id="sort-icon-A"></span></th>
+                            <th class="p-4 text-center font-extrabold cursor-pointer border-l border-indigo-100 hover:bg-indigo-100 transition-colors" onclick="sortHadir('T')">T <span class="sort-icon" id="sort-icon-T"></span></th>
+                            <th class="p-4 text-center font-extrabold cursor-pointer border-l border-indigo-100 hover:bg-indigo-100 transition-colors" onclick="sortHadir('persen')">% <span class="sort-icon" id="sort-icon-persen"></span></th>
+                        </tr></thead>
+                        <tbody id="rekapHadirBody" class="text-sm"></tbody>
+                    </table></div>
                 </div>
             </div>`;
         }
@@ -1974,7 +1922,7 @@
                     </div>
                     
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 filter-section">
-                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Cari Kata Kunci</label><input type="text" id="filterLanggarSearch" onkeyup="applyLanggarFilters()" placeholder="Ketik nama / rincian..." class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 placeholder-slate-400"></div>
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Cari Kata Kunci (Nama/Kelas)</label><input type="text" id="filterLanggarKelas" onkeyup="applyLanggarFilters()" placeholder="Ketik nama / kelas..." class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 placeholder-slate-400"></div>
                         <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Kategori</label><select id="filterLanggarKategori" onchange="applyLanggarFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"><option value="">Semua Kategori</option><option value="Siswa">Siswa</option><option value="Guru">Guru</option><option value="Sarpras">Sarpras</option></select></div>
                         <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Bulan</label><select id="filterLanggarBulan" onchange="applyLanggarFilters()" class="input-modern w-full px-4 py-3 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"><option value="">Semua Bulan</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option></select></div>
                     </div>
@@ -2001,10 +1949,7 @@
                     
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8 filter-section">
                         <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Pilih Semester</label><select id="filterTrenSemester" onchange="renderTrenSemester()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-indigo-50 font-black text-indigo-700 appearance-none cursor-pointer border-indigo-200"><option value="GANJIL">Semester Ganjil (Juli - Des)</option><option value="GENAP">Semester Genap (Jan - Jun)</option></select></div>
-                        <div>
-                            <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Filter Kelas</label>
-                            <select id="filterTrenKelas" onchange="renderTrenSemester()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"></select>
-                        </div>
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Filter Kelas</label><select id="filterTrenKelas" onchange="renderTrenSemester()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"></select></div>
                     </div>
                     
                     <div class="table-container rounded-2xl border border-slate-200 shadow-sm">
