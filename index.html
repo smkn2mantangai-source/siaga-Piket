@@ -530,11 +530,23 @@
         }
 
         function populateFormDropdowns() {
-            const classDropdowns = ['publicKelas', 'inputHadirKelas', 'pantauKelas', 'kejadianKelas'];
-            classDropdowns.forEach(id => {
+            const inputDropdowns = ['publicKelas', 'inputHadirKelas', 'pantauKelas', 'kejadianKelas'];
+            const filterDropdowns = ['filterHadirKelas', 'filterPelanggaranKelas', 'filterTrenKelas', 'filterPemantauanKelas'];
+            
+            // Mengisi dropdown untuk Input (Opsi pertama: Pilih Kelas)
+            inputDropdowns.forEach(id => {
                 const el = document.getElementById(id);
                 if(el) { 
                     el.innerHTML = `<option value="">-- Pilih Kelas --</option>`; 
+                    FIXED_CLASSES.forEach(x => el.add(new Option(x, x))); 
+                }
+            });
+
+            // Mengisi dropdown untuk Filter Rekap (Opsi pertama: Semua Kelas)
+            filterDropdowns.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) { 
+                    el.innerHTML = `<option value="">Semua Kelas</option>`; 
                     FIXED_CLASSES.forEach(x => el.add(new Option(x, x))); 
                 }
             });
