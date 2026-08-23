@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SIAGA-PIKET - Sistem Informasi Aktivitas Guru Piket</title>
     
-    <!-- External Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <!-- Modern Font: Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -77,7 +75,6 @@
 </head>
 <body class="text-slate-800 antialiased h-[100dvh] flex overflow-hidden selection:bg-indigo-100 selection:text-indigo-900">
 
-    <!-- Loading Overlay -->
     <div id="loadingOverlay" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[10000] flex flex-col items-center justify-center transition-opacity">
         <div class="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center">
             <div class="loader mb-4"></div>
@@ -85,7 +82,6 @@
         </div>
     </div>
 
-    <!-- Login Page -->
     <div id="pageLogin" class="fixed inset-0 bg-slate-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
         <div class="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
             <div class="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-indigo-200/40 blur-[120px]"></div>
@@ -103,7 +99,7 @@
             
             <div id="authSelection" class="space-y-4">
                 <button onclick="showAdminLogin()" class="btn-modern w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-4 px-4 rounded-2xl shadow-lg shadow-slate-200 transition-all flex items-center justify-center group">
-                    <span class="mr-3 text-xl group-hover:scale-110 transition-transform">👨‍🏫</span> Masuk sbg Guru Piket / Admin / Kepsek
+                    <span class="mr-3 text-xl group-hover:scale-110 transition-transform">👨‍🏫</span> Masuk sbg Guru Piket / Kepsek
                 </button>
                 <button onclick="showStudentPortal()" class="btn-modern w-full bg-white border-2 border-slate-200 text-slate-700 hover:border-indigo-300 hover:bg-indigo-50 font-bold py-4 px-4 rounded-2xl transition-all flex items-center justify-center group">
                     <span class="mr-3 text-xl group-hover:scale-110 transition-transform">👨‍🎓</span> Portal Siswa (Cek Kehadiran)
@@ -132,12 +128,12 @@
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2">Pilih Kelas</label>
-                    <select id="publicKelas" onchange="loadPublicStudents()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 text-slate-800 appearance-none cursor-pointer" required>
+                    <select id="publicKelas" onchange="loadPublicStudents()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 text-slate-800 cursor-pointer" required>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2">Nama Siswa</label>
-                    <select id="publicNama" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 text-slate-800 appearance-none cursor-pointer" required>
+                    <select id="publicNama" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 text-slate-800 cursor-pointer" required>
                         <option value="">-- Pilih Kelas Dahulu --</option>
                     </select>
                 </div>
@@ -149,7 +145,6 @@
         </div>
     </div>
 
-    <!-- App Wrapper -->
     <div id="appWrapper" class="hidden h-full w-full flex overflow-hidden">
 
     <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden md:hidden transition-opacity"></div>
@@ -208,7 +203,6 @@
     </main>
     </div>
 
-    <!-- Modal Preview Dokumentasi Foto -->
     <div id="docPreviewModal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-md z-[10001] flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl relative fade-in-up border border-slate-100">
             <button onclick="closeDocPreviewModal()" class="absolute top-4 right-4 w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-600 font-bold text-xl transition-colors">✕</button>
@@ -235,8 +229,10 @@
         let globalData = { kehadiran: [], kejadian: [], kehadiranPiket: [], pemantauan: [] };
         let isDataFetched = false;
         
+        // HARDCODE KELAS
         const FIXED_CLASSES = ['XA', 'XB', 'XI ATPH', 'XI ATP', 'XII ATPH', 'XII ATP'];
         
+        // JADWAL PIKET HARIAN
         const JADWAL_PIKET = {
             "Senin": ["SYA'ADAH, S.P.", "MADE ASTUNI,S.Pd", "SYAIFUDDIN, M.Pd"],
             "Selasa": ["ARDIANSYAH, S.P.", "KANA MIATI,S.P", "NURJANNAH, S.Pd.I"],
@@ -269,14 +265,17 @@
         let siswaChartInstance = null;
 
         async function apiCall(action, data = null) {
-            if (API_URL === 'PASTE_LINK_API_ANDA_DISINI_NANTI' || API_URL === '') {
-                return new Promise(resolve => setTimeout(() => resolve(getMockData(action, data)), 600));
-            }
-            
             try {
                 let url = API_URL + '?action=' + action;
                 let options = { method: 'GET' };
-                if (data) options = { method: 'POST', body: JSON.stringify(data), headers: { 'Content-Type': 'text/plain;charset=utf-8' } };
+                if (data) {
+                    data.action = action; // ensure action is in payload
+                    options = { 
+                        method: 'POST', 
+                        body: JSON.stringify(data), 
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' } 
+                    };
+                }
                 const response = await fetch(url, options);
                 return await response.json();
             } catch (error) { 
@@ -284,47 +283,6 @@
                 Swal.fire('Koneksi Gagal', 'Tidak dapat terhubung ke server Google Script.', 'error');
                 if (action === 'getStudentsByClass') return [];
                 return { success: false, message: "Koneksi ke server gagal." }; 
-            }
-        }
-
-        function getMockData(action, data) {
-            const today = new Date().toISOString().split('T')[0];
-            switch(action) {
-                case 'processLogin':
-                    return { success: true, user: { username: data.username, role: 'KEPSEK', nama: 'Kepala Sekolah (Demo)', kelas: '' } };
-                case 'getStudentsByClass':
-                    return [
-                        {nama: 'Ahmad Jailani', kelas: data.kelas}, {nama: 'Budi Santoso', kelas: data.kelas},
-                        {nama: 'Citra Kirana', kelas: data.kelas}, {nama: 'Dewi Lestari', kelas: data.kelas}
-                    ];
-                case 'getDashboardData':
-                    return { success: true, stats: { hadir: 32, sakit: 2, izin: 1, alpa: 0, telat: 1, totalSiswa: 36, kelasDipantau: 5, kBerjalan: 4, kGuruKosong: 1, kTanpaTugas: 0, totalKejadian: 2, piketHadir: 3, piketAbsen: 0 } };
-                case 'saveAttendanceBatch':
-                case 'savePemantauan':
-                case 'saveKejadian':
-                case 'savePresensiPiket':
-                    return { success: true, message: 'Berhasil disimpan (Mode Demo)' };
-                case 'getLogbook':
-                    return { 
-                        success: true, 
-                        data: { 
-                            pemantauan: [{kelas: 'XA', jam: '1, 2', mapel: 'Informatika', guru: 'GUFRON FIRMANSYAH, S.Pd', status: 'Pembelajaran berlangsung dengan guru', tugas: '-', piket: 'Guru Piket (Demo)'}], 
-                            kejadian: [{kategori: 'Siswa', sub: 'Terlambat [Ringan]', deskripsi: 'Siswa: Ahmad Jailani (XA) - Datang telat 15 menit', tindakLanjut: 'Teguran lisan', piket: 'Guru Piket (Demo)', dokumentasi: ''}],
-                            guruPiket: [{nama: "SYA'ADAH, S.P.", status: 'HADIR', keterangan: '-'}]
-                        } 
-                    };
-                case 'getSuperData':
-                    return {
-                        success: true,
-                        data: {
-                            kehadiran: [{tanggal: today, nama: 'Ahmad Jailani', kelas: 'XA', status: 'H', keterangan: ''}],
-                            kejadian: [{tanggal: today, kategori: 'Siswa', sub: 'Terlambat [Ringan]', deskripsi: 'Siswa: Budi Santoso (XA) - Datang telat 15 menit', tindakLanjut: 'Teguran lisan', piket: 'Guru Piket (Demo)', dokumentasi: ''}],
-                            kehadiranPiket: [{tanggal: today, nama: "SYA'ADAH, S.P.", status: 'HADIR', keterangan: '-', penginput: 'Guru Piket'}],
-                            pemantauan: [{tanggal: today, hari: 'Senin', kelas: 'XA', jam: '1, 2', mapel: 'Informatika', guru: 'GUFRON FIRMANSYAH, S.Pd', status: 'Pembelajaran berlangsung dengan guru', adaTugas: '-', detailTugas: '-', catatan: '-', piket: 'Guru Piket'}]
-                        }
-                    };
-                default:
-                    return { success: false, message: 'Aksi tidak dikenali di Mode Demo' };
             }
         }
 
@@ -378,7 +336,7 @@
             sel.innerHTML = '<option value="">Sedang mencari nama...</option>';
             apiCall('getStudentsByClass', {kelas: k}).then(s => { 
                 sel.innerHTML = '<option value="">-- Pilih Nama Anda --</option>'; 
-                s.forEach(x => sel.add(new Option(x.nama, x.nama))); 
+                if(Array.isArray(s)) s.forEach(x => sel.add(new Option(x.nama, x.nama))); 
             });
         }
 
@@ -388,8 +346,8 @@
             apiCall('processLogin', {username: document.getElementById('username').value, password: document.getElementById('password').value})
                 .then(res => { 
                     hideLoading(); 
-                    if(res.success) { currentUser = res.user; initApp(); } 
-                    else Swal.fire({title: 'Gagal', text: res.message, icon: 'error', confirmButtonColor: '#4f46e5'}); 
+                    if(res && res.success) { currentUser = res.user; initApp(); } 
+                    else Swal.fire({title: 'Gagal', text: res ? res.message : 'Kesalahan', icon: 'error', confirmButtonColor: '#4f46e5'}); 
                 });
         }
 
@@ -439,6 +397,7 @@
             if(viewId === 'logbook') fetchLogbook();
             if(viewId === 'presensiPiket') renderPresensiPiketForm();
             
+            // Views that require SuperData
             if(['rekapHadir', 'trenSemester', 'rekapLanggar', 'rekapPelanggaranSiswa', 'rekapPemantauan', 'rekapGuruPiket', 'dashboardSiswa'].includes(viewId)) {
                 if(!isDataFetched) {
                     fetchSuperData(viewId);
@@ -456,6 +415,131 @@
             if (viewId === 'trenSemester') renderTrenSemester();
             if (viewId === 'dashboardSiswa') { renderStudentDashboard(); applyPelanggaranSiswaFilters(); }
             if (viewId === 'rekapGuruPiket') renderRekapGuruPiket();
+        }
+
+        function initApp() {
+            document.getElementById('pageLogin').classList.add('hidden');
+            document.getElementById('appWrapper').classList.remove('hidden');
+            document.getElementById('mainContent').classList.remove('hidden');
+            
+            document.getElementById('userNameDisplay').innerText = currentUser.nama;
+            document.getElementById('userRoleDisplay').innerText = currentUser.role.replace('_', ' ');
+            document.getElementById('userInitial').innerText = currentUser.nama.charAt(0).toUpperCase();
+
+            buildMenusAndViews();
+            populateFormDropdowns();
+            
+            const today = new Date().toISOString().split('T')[0];
+            ['dashDate', 'inputHadirTanggal', 'pantauTanggal', 'kejadianTanggal', 'logbookDate', 'piketTanggal'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.value = today;
+            });
+            
+            if (currentUser.role === 'SISWA') { navigate('dashboardSiswa'); } 
+            else { navigate('dashboard'); updateHariPantau(); }
+        }
+
+        function buildMenusAndViews() {
+            const navContainer = document.getElementById('navMenuContainer');
+            const viewContainer = document.getElementById('viewContainer');
+            navContainer.innerHTML = ''; viewContainer.innerHTML = '';
+
+            let menus = [];
+            if (currentUser.role === 'SISWA') {
+                menus = [
+                    { id: 'dashboardSiswa', label: 'Dashboard Saya', icon: '🏠', type: 'menu' },
+                    { id: 'rekapPelanggaranSiswa', label: 'Riwayat Kedisiplinan', icon: '🚨', type: 'menu' }
+                ];
+                viewContainer.insertAdjacentHTML('beforeend', getViewDashboardSiswa() + getViewPelanggaranSiswa());
+            } else if (currentUser.role === 'KEPSEK' || currentUser.role === 'ADMIN') {
+                menus = [
+                    { label: 'Executive Monitor', type: 'header' },
+                    { id: 'dashboard', label: 'Dashboard Utama', icon: '🏠', type: 'menu' },
+                    { id: 'rekapPemantauan', label: 'Pemantauan Kelas (Guru)', icon: '🏫', type: 'menu' },
+                    { id: 'rekapGuruPiket', label: 'Kehadiran Tim Piket', icon: '👨‍🏫', type: 'menu' },
+                    { label: 'Laporan & Analitik', type: 'header' },
+                    { id: 'rekapPelanggaranSiswa', label: 'Pelanggaran Siswa', icon: '🚨', type: 'menu' },
+                    { id: 'logbook', label: 'Logbook Harian', icon: '📔', type: 'menu' },
+                    { id: 'rekapHadir', label: 'Rekap Kehadiran Siswa', icon: '📊', type: 'menu' },
+                    { id: 'rekapLanggar', label: 'Jurnal Sekolah', icon: '📜', type: 'menu' },
+                    { id: 'trenSemester', label: 'Tren Semester', icon: '📈', type: 'menu' }
+                ];
+                viewContainer.insertAdjacentHTML('beforeend', getViewDashboardPiket() + getViewRekapPemantauan() + getViewRekapGuruPiket() + getViewPelanggaranSiswa() + getViewLogbook() + getViewRekapHadir() + getViewRekapLanggar() + getViewTrenSemester());
+            } else { // Guru Piket
+                menus = [
+                    { label: 'Operasional', type: 'header' },
+                    { id: 'dashboard', label: 'Dashboard Piket', icon: '🏠', type: 'menu' },
+                    { label: 'Tugas Harian', type: 'header' },
+                    { id: 'presensiPiket', label: 'Presensi Tim Piket', icon: '👨‍🏫', type: 'menu' },
+                    { id: 'inputHadir', label: 'Input Kehadiran Siswa', icon: '👨‍🎓', type: 'menu' },
+                    { id: 'pemantauan', label: 'Pantau Pembelajaran', icon: '🏫', type: 'menu' },
+                    { id: 'kejadian', label: 'Lapor Kejadian', icon: '⚠️', type: 'menu' },
+                    { label: 'Laporan Piket', type: 'header' },
+                    { id: 'rekapPemantauan', label: 'Rekap Pemantauan Kelas', icon: '🏫', type: 'menu' },
+                    { id: 'logbook', label: 'Logbook Harian', icon: '📔', type: 'menu' },
+                    { id: 'rekapPelanggaranSiswa', label: 'Pelanggaran Siswa', icon: '🚨', type: 'menu' },
+                    { id: 'rekapHadir', label: 'Rekap Kehadiran', icon: '📊', type: 'menu' }
+                ];
+                viewContainer.insertAdjacentHTML('beforeend', getViewDashboardPiket() + getViewPresensiPiket() + getViewInputHadir() + getViewPemantauan() + getViewKejadian() + getViewRekapPemantauan() + getViewLogbook() + getViewPelanggaranSiswa() + getViewRekapHadir());
+            }
+
+            menus.forEach(m => {
+                if (m.type === 'header') {
+                    navContainer.insertAdjacentHTML('beforeend', `<p class="px-6 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mt-6 mb-2 menu-header">${m.label}</p>`);
+                } else {
+                    const navHTML = `<button onclick="navigate('${m.id}')" class="nav-item nav-${m.id} w-full flex items-center px-6 py-3.5 text-slate-600 hover:text-indigo-600 focus:outline-none">
+                                        <span class="mr-4 text-xl">${m.icon}</span> <span class="menu-text font-semibold text-sm">${m.label}</span>
+                                     </button>`;
+                    navContainer.insertAdjacentHTML('beforeend', navHTML);
+                }
+            });
+        }
+
+        function populateFormDropdowns() {
+            const classDropdowns = ['publicKelas', 'inputHadirKelas', 'pantauKelas', 'kejadianKelas', 'filterHadirKelas', 'filterLanggarKelas', 'filterPelanggaranKelas', 'filterPemantauanKelas', 'filterTrenKelas'];
+            classDropdowns.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) { 
+                    const firstOption = el.id.includes('filter') ? 'Semua Kelas' : '-- Pilih Kelas --';
+                    el.innerHTML = `<option value="">${firstOption}</option>`; 
+                    FIXED_CLASSES.forEach(x => el.add(new Option(x, x))); 
+                }
+            });
+        }
+
+        function fetchSuperData(targetViewId) {
+            showLoading("Menarik data rekapitulasi dari server...");
+            apiCall('getSuperData').then(res => {
+                hideLoading();
+                if(res && res.success) {
+                    globalData = res.data;
+                    isDataFetched = true;
+                    triggerViewRender(targetViewId);
+                } else {
+                    Swal.fire('Error', res ? res.message : 'Gagal load data', 'error');
+                }
+            }).catch(err => {
+                hideLoading();
+            });
+        }
+
+        function loadDashboardPiket() {
+            const tgl = document.getElementById('dashDate').value;
+            const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+            document.getElementById('dashDateDisplay').innerText = new Date(tgl).toLocaleDateString('id-ID', opts);
+            
+            apiCall('getDashboardData', {tanggal: tgl}).then(res => {
+                if(res && res.success) {
+                    const s = res.stats;
+                    document.getElementById('kpi-hadir').innerText = s.totalSiswa > 0 ? (((s.hadir + s.telat) / s.totalSiswa) * 100).toFixed(1) + '%' : '0%';
+                    document.getElementById('kpi-total-siswa').innerText = s.totalSiswa;
+                    document.getElementById('kpi-kelas-jalan').innerText = s.kBerjalan;
+                    document.getElementById('kpi-total-pantau').innerText = s.kelasDipantau;
+                    document.getElementById('kpi-guru-kosong').innerText = s.kGuruKosong;
+                    document.getElementById('kpi-tanpa-tugas').innerText = s.kTanpaTugas;
+                    document.getElementById('kpi-kejadian').innerText = s.totalKejadian;
+                }
+            });
         }
 
         function renderPresensiPiketForm() {
@@ -536,138 +620,13 @@
                 });
         }
 
-        function initApp() {
-            document.getElementById('pageLogin').classList.add('hidden');
-            document.getElementById('appWrapper').classList.remove('hidden');
-            document.getElementById('mainContent').classList.remove('hidden');
-            
-            document.getElementById('userNameDisplay').innerText = currentUser.nama;
-            document.getElementById('userRoleDisplay').innerText = currentUser.role.replace('_', ' ');
-            document.getElementById('userInitial').innerText = currentUser.nama.charAt(0).toUpperCase();
-
-            buildMenusAndViews();
-            populateFormDropdowns();
-            
-            const today = new Date().toISOString().split('T')[0];
-            ['dashDate', 'inputHadirTanggal', 'pantauTanggal', 'kejadianTanggal', 'logbookDate', 'piketTanggal'].forEach(id => {
-                const el = document.getElementById(id);
-                if(el) el.value = today;
-            });
-            
-            if (currentUser.role === 'SISWA') { navigate('dashboardSiswa'); } 
-            else { navigate('dashboard'); updateHariPantau(); }
-        }
-
-        function buildMenusAndViews() {
-            const navContainer = document.getElementById('navMenuContainer');
-            const viewContainer = document.getElementById('viewContainer');
-            navContainer.innerHTML = ''; viewContainer.innerHTML = '';
-
-            let menus = [];
-            if (currentUser.role === 'SISWA') {
-                menus = [
-                    { id: 'dashboardSiswa', label: 'Dashboard Saya', icon: '🏠', type: 'menu' },
-                    { id: 'rekapPelanggaranSiswa', label: 'Riwayat Kedisiplinan', icon: '🚨', type: 'menu' }
-                ];
-                viewContainer.insertAdjacentHTML('beforeend', getViewDashboardSiswa() + getViewPelanggaranSiswa());
-            } else if (currentUser.role === 'KEPSEK' || currentUser.role === 'ADMIN') {
-                menus = [
-                    { label: 'Executive Monitor', type: 'header' },
-                    { id: 'dashboard', label: 'Dashboard Utama', icon: '🏠', type: 'menu' },
-                    { id: 'rekapPemantauan', label: 'Pemantauan Kelas (Guru)', icon: '🏫', type: 'menu' },
-                    { id: 'rekapGuruPiket', label: 'Kehadiran Tim Piket', icon: '👨‍🏫', type: 'menu' },
-                    { label: 'Laporan & Analitik', type: 'header' },
-                    { id: 'rekapPelanggaranSiswa', label: 'Pelanggaran Siswa', icon: '🚨', type: 'menu' },
-                    { id: 'logbook', label: 'Logbook Harian', icon: '📔', type: 'menu' },
-                    { id: 'rekapHadir', label: 'Rekap Kehadiran Siswa', icon: '📊', type: 'menu' },
-                    { id: 'rekapLanggar', label: 'Jurnal Sekolah', icon: '📜', type: 'menu' },
-                    { id: 'trenSemester', label: 'Tren Semester', icon: '📈', type: 'menu' }
-                ];
-                viewContainer.insertAdjacentHTML('beforeend', getViewDashboardPiket() + getViewRekapPemantauan() + getViewRekapGuruPiket() + getViewPelanggaranSiswa() + getViewLogbook() + getViewRekapHadir() + getViewRekapLanggar() + getViewTrenSemester());
-            } else {
-                menus = [
-                    { label: 'Operasional', type: 'header' },
-                    { id: 'dashboard', label: 'Dashboard Piket', icon: '🏠', type: 'menu' },
-                    { label: 'Tugas Harian', type: 'header' },
-                    { id: 'presensiPiket', label: 'Presensi Tim Piket', icon: '👨‍🏫', type: 'menu' },
-                    { id: 'inputHadir', label: 'Input Kehadiran Siswa', icon: '👨‍🎓', type: 'menu' },
-                    { id: 'pemantauan', label: 'Pantau Pembelajaran', icon: '🏫', type: 'menu' },
-                    { id: 'kejadian', label: 'Lapor Kejadian', icon: '⚠️', type: 'menu' },
-                    { label: 'Laporan Piket', type: 'header' },
-                    { id: 'rekapPemantauan', label: 'Rekap Pemantauan Kelas', icon: '🏫', type: 'menu' },
-                    { id: 'logbook', label: 'Logbook Harian', icon: '📔', type: 'menu' },
-                    { id: 'rekapPelanggaranSiswa', label: 'Pelanggaran Siswa', icon: '🚨', type: 'menu' },
-                    { id: 'rekapHadir', label: 'Rekap Kehadiran', icon: '📊', type: 'menu' }
-                ];
-                viewContainer.insertAdjacentHTML('beforeend', getViewDashboardPiket() + getViewPresensiPiket() + getViewInputHadir() + getViewPemantauan() + getViewKejadian() + getViewRekapPemantauan() + getViewLogbook() + getViewPelanggaranSiswa() + getViewRekapHadir());
-            }
-
-            menus.forEach(m => {
-                if (m.type === 'header') {
-                    navContainer.insertAdjacentHTML('beforeend', `<p class="px-6 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mt-6 mb-2 menu-header">${m.label}</p>`);
-                } else {
-                    const navHTML = `<button onclick="navigate('${m.id}')" class="nav-item nav-${m.id} w-full flex items-center px-6 py-3.5 text-slate-600 hover:text-indigo-600 focus:outline-none">
-                                        <span class="mr-4 text-xl">${m.icon}</span> <span class="menu-text font-semibold text-sm">${m.label}</span>
-                                     </button>`;
-                    navContainer.insertAdjacentHTML('beforeend', navHTML);
-                }
-            });
-        }
-
-        function populateFormDropdowns() {
-            const classDropdowns = ['publicKelas', 'inputHadirKelas', 'pantauKelas', 'kejadianKelas', 'filterHadirKelas', 'filterLanggarKelas', 'filterPelanggaranKelas', 'filterPemantauanKelas', 'filterTrenKelas'];
-            classDropdowns.forEach(id => {
-                const el = document.getElementById(id);
-                if(el) { 
-                    const firstOption = el.id.includes('filter') ? 'Semua Kelas' : '-- Pilih Kelas --';
-                    el.innerHTML = `<option value="">${firstOption}</option>`; 
-                    FIXED_CLASSES.forEach(x => el.add(new Option(x, x))); 
-                }
-            });
-        }
-
-        function fetchSuperData(targetViewId) {
-            showLoading("Menarik data rekapitulasi dari server...");
-            apiCall('getSuperData').then(res => {
-                hideLoading();
-                if(res && res.success) {
-                    globalData = res.data;
-                    isDataFetched = true;
-                    triggerViewRender(targetViewId);
-                } else {
-                    Swal.fire('Error', res.message, 'error');
-                }
-            }).catch(err => {
-                hideLoading();
-            });
-        }
-
-        function loadDashboardPiket() {
-            const tgl = document.getElementById('dashDate').value;
-            const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
-            document.getElementById('dashDateDisplay').innerText = new Date(tgl).toLocaleDateString('id-ID', opts);
-            
-            apiCall('getDashboardData', {tanggal: tgl}).then(res => {
-                if(res.success) {
-                    const s = res.stats;
-                    document.getElementById('kpi-hadir').innerText = s.totalSiswa > 0 ? (((s.hadir + s.telat) / s.totalSiswa) * 100).toFixed(1) + '%' : '0%';
-                    document.getElementById('kpi-total-siswa').innerText = s.totalSiswa;
-                    document.getElementById('kpi-kelas-jalan').innerText = s.kBerjalan;
-                    document.getElementById('kpi-total-pantau').innerText = s.kelasDipantau;
-                    document.getElementById('kpi-guru-kosong').innerText = s.kGuruKosong;
-                    document.getElementById('kpi-tanpa-tugas').innerText = s.kTanpaTugas;
-                    document.getElementById('kpi-kejadian').innerText = s.totalKejadian;
-                    if(document.getElementById('kpi-piket-hadir')) document.getElementById('kpi-piket-hadir').innerText = s.piketHadir || 0;
-                }
-            });
-        }
-
         function loadStudentsForAttendance() {
             const k = document.getElementById('inputHadirKelas').value;
             const tbody = document.getElementById('attendanceTableBody');
             if(!k) { document.getElementById('attendanceListContainer').classList.add('hidden'); return; }
             showLoading("Memuat daftar siswa...");
             apiCall('getStudentsByClass', {kelas: k}).then(s => {
+                if(!Array.isArray(s)) return;
                 tbody.innerHTML = s.map((st, i) => `
                     <tr class="hover:bg-slate-50 border-b border-slate-100 transition-colors" data-nama="${st.nama}" data-kelas="${st.kelas}">
                         <td class="p-3 text-center sticky-col font-medium text-slate-400">${i+1}</td>
@@ -697,7 +656,7 @@
             showLoading("Menyimpan data...");
             apiCall('saveAttendanceBatch', {dataBatch, tanggal: tgl, penginput: currentUser.nama}).then(res => {
                 hideLoading(); 
-                if(res.success){ 
+                if(res && res.success){ 
                     showToast('success','Tersimpan!'); 
                     document.getElementById('inputHadirKelas').value=''; 
                     document.getElementById('attendanceListContainer').classList.add('hidden'); 
@@ -722,7 +681,7 @@
             if (k && DATA_MAPEL[k]) {
                 const mapels = DATA_MAPEL[k].sort((a,b) => a.m.localeCompare(b.m));
                 mapels.forEach(item => {
-                    const guruNama = DATA_GURU[item.g];
+                    const guruNama = DATA_GURU[item.g] || "Guru Tidak Ditemukan";
                     const namaPendek = guruNama.split(' ')[0].replace(',', '');
                     const opt = new Option(`${item.m} (${namaPendek})`, item.m);
                     opt.setAttribute('data-guru', guruNama);
@@ -757,7 +716,10 @@
             if(checkedJam.length === 0) return Swal.fire({title:'Ops!', text:'Pilih minimal 1 jam pelajaran (ceklis kotak)', icon:'warning', confirmButtonColor: '#4f46e5'});
             const jamString = checkedJam.join(', ');
 
-            const stat = document.querySelector('input[name="pantauStatus"]:checked').value;
+            const statEl = document.querySelector('input[name="pantauStatus"]:checked');
+            if (!statEl) return Swal.fire('Perhatian', 'Pilih kondisi pembelajaran.', 'warning');
+            const stat = statEl.value;
+
             let adaT = "-", detailT = "-";
             if(stat !== "Pembelajaran berlangsung dengan guru") {
                 const tEl = document.querySelector('input[name="pantauAdaTugas"]:checked');
@@ -781,7 +743,7 @@
                 penginput: currentUser.nama
             }).then(r => { 
                 hideLoading(); 
-                if(r.success) { 
+                if(r && r.success) { 
                     showToast('success','Tersimpan'); 
                     document.getElementById('formPemantauan').reset(); 
                     updateHariPantau(); 
@@ -828,7 +790,7 @@
             sel.innerHTML = '<option value="">Sedang mencari nama...</option>';
             apiCall('getStudentsByClass', {kelas: k}).then(s => { 
                 sel.innerHTML = '<option value="">-- Pilih Nama Siswa --</option>'; 
-                s.forEach(x => sel.add(new Option(x.nama, x.nama))); 
+                if (Array.isArray(s)) s.forEach(x => sel.add(new Option(x.nama, x.nama))); 
             });
         }
 
@@ -881,13 +843,13 @@
         function sendKejadianApi(payload) {
             apiCall('saveKejadian', payload).then(r => { 
                 hideLoading(); 
-                if(r.success) { 
+                if(r && r.success) { 
                     showToast('success','Laporan Terkirim'); 
                     document.getElementById('formKejadian').reset(); 
                     document.getElementById('kejadianSiswaContainer').classList.add('hidden');
                     isDataFetched = false;
                 } else {
-                    Swal.fire('Error', r.message, 'error');
+                    Swal.fire('Error', r ? r.message : 'Error', 'error');
                 }
             });
         }
@@ -897,7 +859,7 @@
             const content = document.getElementById('logbookContent');
             content.innerHTML = '<div class="text-center py-12 text-slate-400 font-medium">Sedang menyusun logbook...</div>';
             apiCall('getLogbook', {tanggal: tgl}).then(r => {
-                if(r.success) {
+                if(r && r.success) {
                     const p = r.data.pemantauan, k = r.data.kejadian, g = r.data.guruPiket || [];
                     const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
                     content.innerHTML = `
@@ -922,7 +884,7 @@
                             ${p.length===0 ? '<p class="text-sm italic text-slate-500 pl-2">Tidak ada catatan pemantauan hari ini.</p>' : `<div class="overflow-x-auto rounded-xl border border-slate-200"><table class="w-full text-sm border-collapse"><tr class="bg-slate-50 text-left"><th class="p-3 border-b">Kelas</th><th class="p-3 border-b">Jam</th><th class="p-3 border-b">Mapel</th><th class="p-3 border-b">Guru</th><th class="p-3 border-b">Status</th><th class="p-3 border-b">Tugas</th></tr>${p.map(x=>`<tr class="hover:bg-slate-50"><td class="p-3 border-b font-medium">${x.kelas}</td><td class="p-3 border-b">${x.jam}</td><td class="p-3 border-b">${x.mapel}</td><td class="p-3 border-b">${x.guru}</td><td class="p-3 border-b font-semibold ${x.status==='Pembelajaran berlangsung dengan guru'?'text-green-600':'text-red-600'}">${x.status}</td><td class="p-3 border-b">${x.tugas}</td></tr>`).join('')}</table></div>`}
                         </div>
                         <div class="mb-8"><h3 class="font-extrabold text-slate-800 mb-4 bg-slate-100 p-3 rounded-xl border border-slate-200">⚠️ LAPORAN KEJADIAN</h3>
-                            ${k.length===0 ? '<p class="text-sm italic text-slate-500 pl-2">Tidak ada laporan kejadian hari ini.</p>' : `<ul class="space-y-4">${k.map(x=>`<li class="border border-slate-200 rounded-xl p-4 bg-white shadow-sm"><div class="flex items-center gap-2 mb-2"><span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs font-bold rounded">${x.kategori}</span><span class="font-bold text-slate-800">${x.sub}</span> ${x.dokumentasi ? `<button onclick="openDocPreviewModal('${x.dokumentasi}', '${x.sub}')" class="text-xs text-blue-600 underline font-bold">Preview Foto</button>` : ''}</div><div class="text-sm text-slate-600 mb-2">${x.deskripsi}</div><div class="text-xs bg-slate-50 p-2 rounded border border-slate-100"><span class="font-bold text-slate-700">Tindak Lanjut:</span> ${x.tindakLanjut}</div></li>`).join('')}</ul>`}
+                            ${k.length===0 ? '<p class="text-sm italic text-slate-500 pl-2">Tidak ada laporan kejadian hari ini.</p>' : `<ul class="space-y-4">${k.map(x=>`<li class="border border-slate-200 rounded-xl p-4 bg-white shadow-sm"><div class="flex items-center gap-2 mb-2"><span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs font-bold rounded">${x.kategori}</span><span class="font-bold text-slate-800">${x.sub}</span> ${x.dokumentasi ? `<button onclick="openDocPreviewModal('${x.dokumentasi}', '${x.sub}')" class="text-xs text-blue-600 underline font-bold ml-auto">Preview Foto</button>` : ''}</div><div class="text-sm text-slate-600 mb-2">${x.deskripsi}</div><div class="text-xs bg-slate-50 p-2 rounded border border-slate-100"><span class="font-bold text-slate-700">Tindak Lanjut:</span> ${x.tindakLanjut}</div></li>`).join('')}</ul>`}
                         </div>
                         <div class="mt-20 flex justify-between px-10 text-sm text-center">
                             <div><p class="mb-20 font-medium text-slate-600">Mengetahui,<br><span class="font-bold text-slate-800">Kepala Sekolah</span></p><p class="font-extrabold border-b-2 border-slate-800 inline-block w-48"></p></div>
@@ -964,10 +926,10 @@
             tbody.innerHTML = pemantauanFilteredData.length === 0 ? `<tr><td colspan="7" class="p-8 text-center text-slate-500 font-medium bg-slate-50">Tidak ada riwayat pemantauan sesuai filter.</td></tr>`
                 : pemantauanFilteredData.map((row, idx) => {
                     let badgeStat = row.status === 'Pembelajaran berlangsung dengan guru' 
-                        ? '<span class="px-3 py-1 bg-green-100 text-green-800 rounded-lg font-bold text-xs">🟢 Normal</span>'
+                        ? '<span class="px-3 py-1 bg-green-100 text-green-800 rounded-lg font-bold text-xs whitespace-nowrap">🟢 Normal</span>'
                         : (row.status === 'Guru belum / tidak berada di kelas' 
-                            ? '<span class="px-3 py-1 bg-amber-100 text-amber-800 rounded-lg font-bold text-xs">🟡 Belum Masuk</span>'
-                            : '<span class="px-3 py-1 bg-red-100 text-red-800 rounded-lg font-bold text-xs">🔴 Tidak Hadir</span>');
+                            ? '<span class="px-3 py-1 bg-amber-100 text-amber-800 rounded-lg font-bold text-xs whitespace-nowrap">🟡 Belum Masuk</span>'
+                            : '<span class="px-3 py-1 bg-red-100 text-red-800 rounded-lg font-bold text-xs whitespace-nowrap">🔴 Tidak Hadir</span>');
                     return `
                         <tr class="hover:bg-slate-50 border-b border-slate-100 transition-colors">
                             <td class="p-3 text-center text-slate-400 font-medium">${idx + 1}</td>
@@ -976,7 +938,7 @@
                             <td class="p-3 font-bold text-slate-800">${row.mapel}</td>
                             <td class="p-3 font-medium text-slate-700">${row.guru}</td>
                             <td class="p-3">${badgeStat}</td>
-                            <td class="p-3 text-xs text-slate-500 font-medium">${row.adaTugas} ${row.detailTugas !== '-' ? '('+row.detailTugas+')' : ''}</td>
+                            <td class="p-3 text-xs text-slate-500 font-medium whitespace-normal">${row.adaTugas} ${row.detailTugas && row.detailTugas !== '-' ? '('+row.detailTugas+')' : ''}</td>
                         </tr>`;
                 }).join('');
         }
@@ -984,9 +946,10 @@
         function applyPelanggaranSiswaFilters() {
             if(!globalData.kejadian) return;
             const fKelas = document.getElementById('filterPelanggaranKelas') ? document.getElementById('filterPelanggaranKelas').value : '';
-            const fTingkat = document.getElementById('filterPelanggaranTingkat').value;
-            const fBulan = document.getElementById('filterPelanggaranBulan').value;
-            const fSearch = document.getElementById('filterPelanggaranSearch').value.toLowerCase();
+            const fTingkat = document.getElementById('filterPelanggaranTingkat') ? document.getElementById('filterPelanggaranTingkat').value : '';
+            const fBulan = document.getElementById('filterPelanggaranBulan') ? document.getElementById('filterPelanggaranBulan').value : '';
+            const searchEl = document.getElementById('filterPelanggaranSearch');
+            const fSearch = searchEl ? searchEl.value.toLowerCase() : '';
 
             pelanggaranSiswaFilteredData = globalData.kejadian.filter(d => d.kategori === 'Siswa');
 
@@ -1020,7 +983,7 @@
             container.innerHTML = pelanggaranSiswaFilteredData.sort((a,b) => new Date(b.tanggal) - new Date(a.tanggal)).map(row => {
                 let isBerat = row.sub.includes('[Berat]'), isSedang = row.sub.includes('[Sedang]');
                 let badgeColor = isBerat ? 'bg-red-100 text-red-800 border-red-300' : (isSedang ? 'bg-orange-100 text-orange-800 border-orange-300' : 'bg-yellow-100 text-yellow-800 border-yellow-300');
-                let linkDoc = row.dokumentasi ? `<button onclick="openDocPreviewModal('${row.dokumentasi}', '${row.sub}')" class="btn-modern text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-extrabold px-3 py-1.5 rounded-lg border border-indigo-200 mt-3 inline-flex items-center">🖼️ Preview Bukti Dokumentasi</button>` : '';
+                let linkDoc = row.dokumentasi ? `<button onclick="openDocPreviewModal('${row.dokumentasi}', '${row.sub}')" class="btn-modern text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-extrabold px-3 py-1.5 rounded-lg border border-indigo-200 mt-3 inline-flex items-center">🖼️ Preview Bukti</button>` : '';
 
                 return `
                     <div class="border border-slate-200 rounded-2xl p-5 hover:shadow-md transition-all bg-white relative overflow-hidden">
@@ -1029,7 +992,7 @@
                                 <h4 class="font-extrabold text-slate-800 text-base">${row.sub}</h4>
                                 <p class="text-xs font-semibold text-slate-400 mt-0.5">📅 ${row.tanggal} &bull; Pelapor: ${row.piket}</p>
                             </div>
-                            <span class="px-3 py-1 text-xs font-black rounded-lg border ${badgeColor}">${isBerat ? '🔴 BERAT' : (isSedang ? '🟠 SEDANG' : '🟡 RINGAN')}</span>
+                            <span class="px-3 py-1 text-xs font-black rounded-lg border whitespace-nowrap ${badgeColor}">${isBerat ? '🔴 BERAT' : (isSedang ? '🟠 SEDANG' : '🟡 RINGAN')}</span>
                         </div>
                         <div class="bg-slate-50 rounded-xl p-3.5 text-xs text-slate-700 border border-slate-100 leading-relaxed">
                             <p class="mb-2"><span class="font-extrabold text-slate-800 block mb-0.5">👤 Identitas / Detail:</span> ${row.deskripsi}</p>
@@ -1043,6 +1006,7 @@
         function renderRekapGuruPiket() {
             if(!globalData.kehadiranPiket) return;
             const container = document.getElementById('guruPiketDataContainer');
+            if (!container) return;
             if (globalData.kehadiranPiket.length === 0) {
                 container.innerHTML = '<div class="col-span-full text-center p-10 bg-slate-50 rounded-2xl border border-slate-200"><p class="text-slate-500 font-medium">Belum ada riwayat presensi tim piket.</p></div>';
                 return;
@@ -1075,7 +1039,7 @@
             const pivot = {};
             tempData.forEach(row => {
                 if (!pivot[row.nama]) pivot[row.nama] = { nama: row.nama, kelas: row.kelas, H:0, S:0, I:0, A:0, T:0, total:0 };
-                const stat = row.status.toUpperCase();
+                const stat = row.status ? row.status.toUpperCase() : '';
                 if (['H', 'S', 'I', 'A', 'T'].includes(stat)) { pivot[row.nama][stat]++; pivot[row.nama].total++; }
             });
 
@@ -1121,7 +1085,7 @@
             if (currentUser.role === 'SISWA') {
                 langgarFilteredData = langgarFilteredData.filter(d => d.deskripsi.includes(currentUser.nama));
             } else {
-                if (fKelas) langgarFilteredData = langgarFilteredData.filter(d => d.deskripsi.includes(fKelas)); 
+                if (fKelas) langgarFilteredData = langgarFilteredData.filter(d => d.deskripsi.toLowerCase().includes(fKelas.toLowerCase())); 
             }
             if (fKategori) langgarFilteredData = langgarFilteredData.filter(d => d.kategori === fKategori);
             if (fBulan) langgarFilteredData = langgarFilteredData.filter(d => d.tanggal && d.tanggal.split('-')[1] === fBulan);
@@ -1172,7 +1136,7 @@
                     pivot[row.nama] = { nama: row.nama, kelas: row.kelas, months: {} };
                     currentMonthsInfo.forEach(mo => pivot[row.nama].months[mo.m] = { H:0, total:0 });
                 }
-                const stat = row.status.toUpperCase();
+                const stat = row.status ? row.status.toUpperCase() : '';
                 if (['H', 'S', 'I', 'A', 'T'].includes(stat)) {
                     pivot[row.nama].months[month].total++;
                     if(['H', 'T'].includes(stat)) pivot[row.nama].months[month].H++; 
@@ -1199,6 +1163,7 @@
 
         function executeSortTren() {
             const trHeader = document.getElementById('trenHeaderRow');
+            if(!trHeader) return;
             let headerHTML = `<th class="p-3 font-bold cursor-pointer hover:bg-indigo-100 transition-colors" onclick="sortTren('nama')">Nama Siswa <span class="sort-icon">${sortColTren === 'nama' ? (sortAscTren ? '▲' : '▼') : ''}</span></th>
                               <th class="p-3 font-bold text-center border-l border-indigo-100 cursor-pointer hover:bg-indigo-100 transition-colors" onclick="sortTren('kelas')">Kelas <span class="sort-icon">${sortColTren === 'kelas' ? (sortAscTren ? '▲' : '▼') : ''}</span></th>`;
             
@@ -1235,7 +1200,7 @@
             
             myData.forEach(row => {
                 if(row.tanggal && row.tanggal.split('-')[1] === currentMonth) {
-                    const stat = row.status.toUpperCase();
+                    const stat = row.status ? row.status.toUpperCase() : '';
                     if(['H', 'S', 'I', 'A', 'T'].includes(stat)) { total_bulan++; if(['H', 'T'].includes(stat)) H_bulan++; }
                 }
             });
@@ -1249,7 +1214,7 @@
                 if(!row.tanggal) return;
                 const month = row.tanggal.split('-')[1];
                 if(monthsData[month]) {
-                    const stat = row.status.toUpperCase();
+                    const stat = row.status ? row.status.toUpperCase() : '';
                     if(['H', 'S', 'I', 'A', 'T'].includes(stat)) { monthsData[month].total++; if(['H', 'T'].includes(stat)) monthsData[month].H++; }
                 }
             });
@@ -1295,7 +1260,7 @@
 
             let counts = { H:0, S:0, I:0, A:0, T:0, total:0 };
             myData.forEach(row => {
-                const stat = row.status.toUpperCase();
+                const stat = row.status ? row.status.toUpperCase() : '';
                 if(['H', 'S', 'I', 'A', 'T'].includes(stat)) { counts[stat]++; counts.total++; }
             });
 
@@ -1590,7 +1555,6 @@
                             <div>
                                 <label class="block text-xs font-extrabold text-rose-600 uppercase tracking-wider mb-2">Kelas</label>
                                 <select id="kejadianKelas" onchange="loadStudentsForKejadian()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-white font-bold appearance-none border-rose-200">
-                                    <option value="">-- Pilih Kelas --</option>
                                 </select>
                             </div>
                             <div>
@@ -1743,7 +1707,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="bg-white p-6 md:p-10 rounded-3xl shadow-sm border border-slate-200" id="logbookContent">
+                <div class="bg-white p-6 md:p-10 rounded-3xl shadow-sm border border-slate-200 print:shadow-none print:border-none print:p-0" id="logbookContent">
                 </div>
             </div>`;
         }
