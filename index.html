@@ -370,6 +370,7 @@
             document.getElementById('loadingText').innerText = "Memverifikasi Akses Portal...";
             
             const savedUserStr = localStorage.getItem('siaga_user');
+            const creds = localStorage.getItem('siaga_credentials');
 
             if (!savedUserStr) {
                 handleMissingSession();
@@ -378,15 +379,30 @@
 
             try {
                 const savedUser = JSON.parse(savedUserStr);
-                currentUser = savedUser;
-                
-                // Normalisasi role untuk kompatibilitas fungsi aplikasi lama
-                if (currentUser.role && currentUser.role.toLowerCase() === 'siswa') {
-                    currentUser.role = 'SISWA';
+                if (savedUser.role === 'siswa') {
+                    currentUser = { role: 'SISWA', nama: savedUser.nama, kelas: savedUser.kelas };
+                    initApp();
+                    hideLoading();
+                } else if (creds) {
+                    const decoded = atob(creds);
+                    const firstColon = decoded.indexOf(':');
+                    const u = decoded.substring(0, firstColon);
+                    const p = decoded.substring(firstColon + 1);
+                    
+                    apiCall('processLogin', {username: u, password: p}).then(res => {
+                        if (res && res.success) {
+                            currentUser = res.user;
+                            initApp();
+                            hideLoading();
+                        } else {
+                            localStorage.removeItem('siaga_user');
+                            localStorage.removeItem('siaga_credentials');
+                            handleMissingSession();
+                        }
+                    });
+                } else {
+                    handleMissingSession();
                 }
-                
-                initApp();
-                hideLoading();
             } catch(e) {
                 handleMissingSession();
             }
@@ -2213,6 +2229,110 @@
                                 </tr>
                             </thead>
                             <tbody id="rekapPelanggaranSummaryBody" class="text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function getViewDashboardSiswa() {
+            return `
+            <div id="view-dashboardSiswa" class="app-view hidden max-w-5xl mx-auto pb-20 md:pb-8">
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-10">
+                    <div class="flex items-center mb-8 border-b border-slate-100 pb-6">
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center mr-4 text-2xl shadow-sm border border-white">🏠</div>
+                        <div>
+                            <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Dashboard & Poin Saya</h2>
+                            <p class="text-slate-500 font-medium">Pantau kehadiran, akumulasi poin kedisiplinan, dan motivasi belajar.</p>
+                        </div>
+                    </div>
+
+                    <!-- Kotak Saran Edukatif / Status Siswa -->
+                    <div id="siswaSaranBox" class="mb-10"></div>
+                    
+                    <!-- KPI Poin Kedisiplinan Siswa -->
+                    <h3 class="text-lg font-extrabold text-slate-800 mb-4 flex items-center">
+                        <span class="mr-2">🚨</span> Akumulasi Poin Kedisiplinan & Prestasi
+                    </h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-10">
+                        <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-2xl text-center">
+                            <p class="text-xs font-bold text-yellow-800 uppercase">🟡 Poin Ringan</p>
+                            <p id="siswaPoinRingan" class="text-2xl font-black text-yellow-800 mt-1">0</p>
+                        </div>
+                        <div class="p-4 bg-orange-50 border border-orange-200 rounded-2xl text-center">
+                            <p class="text-xs font-bold text-orange-800 uppercase">🟠 Poin Sedang</p>
+                            <p id="siswaPoinSedang" class="text-2xl font-black text-orange-800 mt-1">0</p>
+                        </div>
+                        <div class="p-4 bg-red-50 border border-red-200 rounded-2xl text-center">
+                            <p class="text-xs font-bold text-red-800 uppercase">🔴 Poin Berat</p>
+                            <p id="siswaPoinBerat" class="text-2xl font-black text-red-800 mt-1">0</p>
+                        </div>
+                        <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-center">
+                            <p class="text-xs font-bold text-emerald-800 uppercase">🏆 Penghargaan</p>
+                            <p id="siswaPoinPenghargaan" class="text-2xl font-black text-emerald-700 mt-1">0</p>
+                        </div>
+                        <div class="col-span-2 sm:col-span-1 p-4 bg-indigo-600 text-white rounded-2xl text-center shadow-lg shadow-indigo-200">
+                            <p class="text-xs font-bold text-indigo-100 uppercase">Total Beban Poin</p>
+                            <p id="siswaTotalPoinDisplay" class="text-3xl font-black text-white mt-1">0</p>
+                        </div>
+                    </div>
+
+                    <!-- Riwayat Pelanggaran Siswa -->
+                    <h3 class="text-lg font-extrabold text-slate-800 mb-4 flex items-center">
+                        <span class="mr-2">📜</span> Catatan Riwayat Pelanggaran & Penghargaan
+                    </h3>
+                    <div id="siswaRiwayatPelanggaranContainer" class="space-y-3 mb-10"></div>
+
+                    <!-- Kehadiran Section -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10 border-t border-slate-100 pt-8">
+                        <div class="bg-gradient-to-br from-indigo-500 to-indigo-600 p-6 rounded-3xl shadow-lg shadow-indigo-200 text-white relative overflow-hidden group">
+                            <h3 class="text-sm font-bold text-indigo-100 uppercase tracking-wider mb-2">Kehadiran Bulan Ini</h3>
+                            <div class="flex items-end justify-between">
+                                <p id="siswaBulanIniPersen" class="text-5xl font-black">-</p>
+                                <span class="text-4xl mb-1 opacity-80">📈</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-slate-100 to-slate-200 p-6 rounded-3xl border border-slate-200 relative overflow-hidden">
+                            <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Status Portal</h3>
+                            <div class="flex items-end justify-between">
+                                <p class="text-2xl font-extrabold text-slate-700 mt-2">Aktif Siswa</p>
+                                <span class="text-4xl mb-1 opacity-80">📋</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="border border-slate-200 rounded-3xl p-6 md:p-8 mb-10 bg-slate-50/50">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+                            <h3 class="text-xl font-extrabold text-slate-800">📊 Grafik Tren Kehadiran</h3>
+                            <select id="siswaSemesterSelect" onchange="renderStudentDashboard()" class="input-modern px-5 py-3 border border-indigo-200 rounded-xl bg-white text-sm font-black text-indigo-700 outline-none shadow-sm cursor-pointer">
+                                <option value="GANJIL">Semester Ganjil (Jul - Des)</option>
+                                <option value="GENAP">Semester Genap (Jan - Jun)</option>
+                            </select>
+                        </div>
+                        <div class="w-full bg-white p-4 rounded-2xl border border-slate-100 shadow-sm" style="height: 300px;">
+                            <canvas id="siswaChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-xl font-extrabold text-slate-800 mb-6">🔍 Rincian Kehadiran</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                        <div><label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Filter Bulan</label><select id="siswaFilterBulan" onchange="renderStudentDetailTable()" class="input-modern w-full px-4 py-3.5 rounded-xl bg-slate-50 font-bold appearance-none cursor-pointer"><option value="">Semua (Keseluruhan)</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option></select></div>
+                    </div>
+                    
+                    <div class="overflow-x-auto border border-slate-200 rounded-2xl shadow-sm">
+                        <table class="w-full text-center whitespace-nowrap">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider font-extrabold border-b border-slate-200">
+                                    <th class="p-4 border-r border-slate-200 w-1/6">Hadir (H)</th>
+                                    <th class="p-4 border-r border-slate-200 w-1/6">Sakit (S)</th>
+                                    <th class="p-4 border-r border-slate-200 w-1/6">Izin (I)</th>
+                                    <th class="p-4 border-r border-slate-200 w-1/6">Alpa (A)</th>
+                                    <th class="p-4 border-r border-slate-200 w-1/6">Telat (T)</th>
+                                    <th class="p-4 bg-indigo-50 text-indigo-700 w-1/6">Total Absen</th>
+                                </tr>
+                            </thead>
+                            <tbody id="siswaDetailBody"></tbody>
                         </table>
                     </div>
                 </div>
